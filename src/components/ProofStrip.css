@@ -81,6 +81,14 @@
   background: var(--paper-tint);
 }
 
+@media (max-width: 760px) {
+  .proof {
+    /* Less pull-up than desktop: frees room above for a bigger CTA and more
+       breathing space before the feed dissolves in. */
+    margin-top: clamp(-90px, -7vh, -48px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .proof {
     /* Static grid, still masked into the hero — the proof reads fine standing

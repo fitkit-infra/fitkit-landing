@@ -15,7 +15,7 @@ export interface NavLink {
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Blog', href: '#blog' },
-  { label: 'For indie creators', href: '#for-indie-creators' },
+  { label: 'For indie creators', href: '#for-indie-creators', compact: false },
   { label: 'Policies', href: '#policies' },
 ];
 

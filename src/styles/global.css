@@ -22,9 +22,9 @@
 
   /* Accent: a deep clay pulled from the outfit imagery (burgundies, browns,
      warm neutrals). Used on the CTA and one underline detail — nowhere else. */
-  --clay: #8f4a31;
-  --clay-deep: #74381f;
-  --clay-veil: rgba(143, 74, 49, 0.16);
+  --clay: #5e1e2b;
+  --clay-deep: #42151e;
+  --clay-veil: rgba(94, 30, 43, 0.16);
 
   /* The top bar's backdrop once the page has scrolled under it — the paper
      surface, held just short of opaque. */
@@ -78,9 +78,9 @@
   --ink-soft: #a89c91;
   --hairline: rgba(244, 239, 232, 0.12);
 
-  --clay: #cd7a56;
-  --clay-deep: #b96844;
-  --clay-veil: rgba(205, 122, 86, 0.22);
+  --clay: #ac3950;
+  --clay-deep: #932f43;
+  --clay-veil: rgba(172, 57, 80, 0.22);
 
   --paper-veil: rgba(20, 17, 15, 0.78);
   /* Almost nothing: on a dark ground the button's own colour is the lift. */

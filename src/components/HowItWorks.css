@@ -102,4 +102,16 @@
   .how__step {
     --pill-size: 44px;
   }
+
+  .how__title {
+    font-size: 1.7rem;
+  }
+
+  .how__step-title {
+    font-size: 1.32rem;
+  }
+
+  .how__body {
+    font-size: 16px;
+  }
 }
