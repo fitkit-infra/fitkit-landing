@@ -41,8 +41,9 @@
   margin-bottom: -0.14em;
 }
 
+/* Inline-block so the box hugs the text: this is what the top bar measures. */
 .hero__line-inner {
-  display: block;
+  display: inline-block;
   will-change: transform;
 }
 

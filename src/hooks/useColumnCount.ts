@@ -1,10 +1,18 @@
 import { useEffect, useState } from 'react';
 
-/** Column count by viewport width. Same grid throughout — it only rescales. */
+/**
+ * Masonry slot count by viewport width. Same grid throughout — it only
+ * rescales.
+ *
+ * These are slots, not filled columns: from five slots up the strip leaves the
+ * outermost one on each side empty (see ProofStrip), so the steps are chosen to
+ * keep the *filled* columns at a sane width — four of them on a desktop, three
+ * from tablet-landscape down to where the grid goes full-bleed again.
+ */
 const COLUMN_STEPS: { minWidth: number; columns: number }[] = [
-  { minWidth: 1400, columns: 6 },
-  { minWidth: 1080, columns: 5 },
-  { minWidth: 760, columns: 4 },
+  { minWidth: 1240, columns: 6 },
+  { minWidth: 880, columns: 5 },
+  { minWidth: 620, columns: 4 },
   { minWidth: 0, columns: 3 },
 ];
 

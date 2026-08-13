@@ -18,7 +18,7 @@ npm run preview
 | `src/components/Hero.tsx` | Headline (two set lines) and the page's single CTA. |
 | `src/components/ProofStrip.tsx` | Auto-scrolling masonry grid of real outfit imagery. |
 | `src/components/PlaceholderSection.tsx` | Empty, outlined-in-dev scaffolding for the sections below the fold. |
-| `src/data/nav.ts` | Nav links and the CTA, as config. |
+| `src/data/nav.ts` | Nav links and the CTA, as config. `compact: false` drops a link from the collapsed mobile bar. |
 | `src/data/feed.ts` | The proof strip's static image manifest. |
 | `src/motion/springs.ts` | The shared spring set. Every transition on the page comes from here. |
 
@@ -75,3 +75,19 @@ heights, same hairline-bordered rounded cards, with the title and author line
 removed. It loops by holding two copies of each column and jumping back by exactly
 one measured copy height, and it masks to nothing at its top edge so the imagery
 dissolves into the hero's paper rather than butting against it.
+
+The grid is laid out in *slots*, and from five slots up the outermost slot on each
+side is left empty, so the imagery stops short of the screen edges without any of
+the remaining columns shifting: the slots stay full-bleed and equal-width, the
+outer two simply hold nothing. `useColumnCount` picks the slot count per breakpoint
+and is written around that — six slots (four filled) on a desktop, five (three
+filled) on a small laptop or tablet, and full-bleed four or three below that, where
+there aren't two columns to spare.
+
+## Top bar alignment
+
+The bar's contents line up with the hero headline's text, not with the page
+gutters: the mark sits directly over the headline's first letter and the last nav
+item ends on its last. `Hero` measures the widest set line and publishes it as
+`--headline-width`; `.topbar__inner` is that wide and centred. If the headline copy
+or its type size changes, the bar follows automatically — nothing to keep in sync.

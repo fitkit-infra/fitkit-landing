@@ -9,6 +9,20 @@
       content="Fitkit is where shoppers browse outfits across every brand at once. List your brand and get found by the people already looking."
     />
     <meta name="theme-color" content="#FAF8F5" />
+    <!-- Theme is applied before first paint, so a returning visitor on dark
+         never sees a frame of paper. Kept inline and tiny on purpose: anything
+         module-loaded runs after the first paint. -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('fitkit-theme');
+          var dark = saved
+            ? saved === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (dark) document.documentElement.dataset.theme = 'dark';
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 

@@ -45,11 +45,18 @@ const MAX_VELOCITY_BOOST = 820;
 export default function ProofStrip() {
   const reduceMotion = useReducedMotion();
   const bandRef = useRef<HTMLElement>(null);
-  const columnCount = useColumnCount();
+  const slotCount = useColumnCount();
+
+  // The outermost slot on each side is left empty, so the grid stops short of
+  // the screen edges without any of the remaining columns moving: the slots are
+  // still laid out full-bleed and at the same width, the outer two just hold
+  // nothing. Below five slots there are not two columns to spare.
+  const edgeSlots = slotCount >= 5 ? 1 : 0;
+  const filledCount = slotCount - edgeSlots * 2;
 
   const columns = useMemo(
-    () => packColumns(FEED_IMAGES, columnCount, ITEMS_PER_COLUMN),
-    [columnCount]
+    () => packColumns(FEED_IMAGES, filledCount, ITEMS_PER_COLUMN),
+    [filledCount]
   );
 
   // Page scroll drives both the parallax and the velocity coupling.
@@ -70,24 +77,33 @@ export default function ProofStrip() {
     <section className="proof" ref={bandRef} aria-hidden="true">
       <motion.div className="proof__parallax" style={reduceMotion ? undefined : { y: parallaxY }}>
         <div className="proof__columns">
-          {columns.map((items, index) => (
-            <motion.div
-              className="proof__column"
-              key={`${columnCount}-${index}`}
-              // Columns rise into place from below, outermost last, so the grid
-              // assembles rather than appearing.
-              initial={reduceMotion ? false : { opacity: 0, y: 46 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...REVEAL, delay: 0.12 + index * 0.055 }}
-            >
-              <DriftColumn
-                items={items}
-                speed={COLUMN_SPEEDS[index % COLUMN_SPEEDS.length]}
-                velocity={velocity}
-                running={running}
-              />
-            </motion.div>
-          ))}
+          {Array.from({ length: slotCount }, (_, slot) => {
+            const columnIndex = slot - edgeSlots;
+            const items = columns[columnIndex];
+
+            if (!items) {
+              return <div className="proof__column" key={`${slotCount}-empty-${slot}`} />;
+            }
+
+            return (
+              <motion.div
+                className="proof__column"
+                key={`${slotCount}-${slot}`}
+                // Columns rise into place from below, left to right, so the
+                // grid assembles rather than appearing.
+                initial={reduceMotion ? false : { opacity: 0, y: 46 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...REVEAL, delay: 0.12 + columnIndex * 0.055 }}
+              >
+                <DriftColumn
+                  items={items}
+                  speed={COLUMN_SPEEDS[columnIndex % COLUMN_SPEEDS.length]}
+                  velocity={velocity}
+                  running={running}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
     </section>
@@ -154,7 +170,7 @@ function DriftColumn({ items, speed, velocity, running }: DriftColumnProps) {
     <div className="proof__track" ref={trackRef}>
       <div className="proof__copy" ref={copyRef}>
         {items.map((image, i) => (
-          <FeedCard key={`a-${i}`} image={image} eager />
+          <FeedCard key={`a-${i}`} image={image} />
         ))}
       </div>
       {/* Second copy — what the viewport is looking at for half of every loop. */}

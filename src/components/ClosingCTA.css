@@ -1,0 +1,57 @@
+.closing {
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--page-x);
+  /* Hero-scale breathing room, so this reads as a closing beat and not as the
+     top of a footer. */
+  padding-block: clamp(120px, 20vh, 232px);
+}
+
+.closing__inner {
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+}
+
+.closing__line {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 96, 'SOFT' 30, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.5vw, 3.1rem);
+  line-height: 1.06;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+/* Same clip-and-rise as the hero's headline lines: padded for descenders, and
+   pulled back by the same amount so the leading is unchanged. */
+.closing__line-clip {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.closing__line-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+.closing__action {
+  margin-top: clamp(30px, 4vh, 46px);
+}
+
+@media (max-width: 760px) {
+  .closing {
+    padding-block: clamp(88px, 14vh, 140px);
+  }
+
+  .closing__line {
+    font-size: clamp(1.4rem, 6.4vw, 2.1rem);
+    line-height: 1.12;
+  }
+
+  .closing__action {
+    margin-top: 26px;
+  }
+}

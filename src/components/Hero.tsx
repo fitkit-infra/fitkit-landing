@@ -1,4 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import { REVEAL, REVEAL_LIGHT, STAGGER } from '../motion/springs';
 import CTAButton from './CTAButton';
 import './Hero.css';
@@ -17,6 +18,34 @@ const HEADLINE = ['where fashion brands get found', 'by the people already looki
 export default function Hero() {
   const reduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+
+  // The top bar aligns to the headline's text, not to the page gutters, so the
+  // widest set line's width is published as --headline-width for it to read.
+  // The line boxes are inline-block, so their measured width is the text's; the
+  // reveal only ever translates them, which leaves that width untouched.
+  useEffect(() => {
+    const headline = headlineRef.current;
+    if (!headline) return;
+
+    const lines = [...headline.querySelectorAll<HTMLElement>('.hero__line-inner')];
+    const measure = () => {
+      const widest = lines.reduce((max, line) => Math.max(max, line.getBoundingClientRect().width), 0);
+      if (widest > 0) {
+        document.documentElement.style.setProperty('--headline-width', `${Math.round(widest)}px`);
+      }
+    };
+
+    // Observing the lines rather than the heading: above the copy's max width
+    // the heading's box stops growing while the type inside it keeps scaling.
+    const observer = new ResizeObserver(measure);
+    lines.forEach((line) => observer.observe(line));
+    measure();
+    // Fraunces arrives after first paint and is wider than the fallback serif.
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    return () => observer.disconnect();
+  }, []);
 
   // Scroll-linked, not scroll-triggered: the copy is tied to the scroll
   // position through the first screen, then it is gone.
@@ -29,7 +58,7 @@ export default function Hero() {
         className="hero__copy"
         style={reduceMotion ? undefined : { y: dissolveY, opacity: dissolveOpacity }}
       >
-        <h1 className="hero__headline">
+        <h1 className="hero__headline" ref={headlineRef}>
           {HEADLINE.map((line, i) => (
             // Each line clips its own reveal; the box is padded and pulled back
             // by the same amount so descenders are never cut off.
@@ -52,7 +81,9 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...REVEAL_LIGHT, delay: 0.08 + HEADLINE.length * STAGGER + 0.12 }}
         >
-          <CTAButton />
+          {/* Sends the reader into the roadmap: from the top of the page the
+              question is what listing involves, not where the form is. */}
+          <CTAButton href="#how-it-works" />
         </motion.div>
       </motion.div>
     </section>

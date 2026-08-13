@@ -1,0 +1,105 @@
+.how {
+  /* The strip above releases into paper, so this section opens with air rather
+     than a boundary. */
+  padding-block: clamp(72px, 12vh, 148px) clamp(64px, 10vh, 120px);
+  text-align: center;
+}
+
+.how__title {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 40, 'SOFT' 22, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  letter-spacing: -0.014em;
+  color: var(--ink);
+  margin-bottom: clamp(40px, 6vh, 76px);
+}
+
+.how__steps {
+  /* Centred as a block, set left inside it: the route needs one left edge for
+     the icons and the copy to share, and centred copy would lose it. */
+  display: grid;
+  gap: var(--step-gap);
+  margin: 0 auto;
+  padding: 0;
+  width: fit-content;
+  max-width: 620px;
+  text-align: left;
+  list-style: none;
+  --step-gap: clamp(34px, 4.8vh, 54px);
+}
+
+.how__step {
+  position: relative;
+  --pill-size: clamp(46px, 4vw, 56px);
+}
+
+/* The route line: a hairline dropped through the gap below each step but the
+   last, on the pills' centre line, so the run reads as one route and
+   terminates rather than trailing off. */
+.how__step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: calc(var(--pill-size) / 2);
+  width: 1px;
+  height: var(--step-gap);
+  background: var(--hairline);
+}
+
+/* Icon and title on one line — the step's header row. */
+.how__head {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 1.4vw, 20px);
+  margin-bottom: clamp(12px, 1.6vh, 18px);
+}
+
+.how__pill {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--pill-size);
+  height: var(--pill-size);
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: var(--paper-tint);
+  /* The accent's one appearance outside the CTA below: the glyph, not the
+     pill — a filled disc at this size reads as a SaaS step badge. */
+  color: var(--clay);
+}
+
+.how__icon {
+  width: 46%;
+  height: 46%;
+}
+
+.how__step-title {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 36, 'SOFT' 22, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(1.22rem, 1.7vw, 1.6rem);
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+  margin: 0;
+}
+
+.how__body {
+  font-family: var(--sans);
+  font-size: clamp(14.5px, 1.05vw, 16.5px);
+  line-height: 1.62;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+@media (max-width: 860px) {
+  /* Reflow, not a restructure: same route, tighter run. */
+  .how__steps {
+    width: auto;
+    --step-gap: 32px;
+  }
+
+  .how__step {
+    --pill-size: 44px;
+  }
+}

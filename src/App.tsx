@@ -1,13 +1,15 @@
+import ClosingCTA from './components/ClosingCTA';
+import Footer from './components/Footer';
 import Hero from './components/Hero';
-import PlaceholderSection from './components/PlaceholderSection';
+import HowItWorks from './components/HowItWorks';
 import ProofStrip from './components/ProofStrip';
 import TopBar from './components/TopBar';
 
 /**
  * Page order is deliberate: the hero's copy and the proof strip are one
  * continuous move from words into product, so the strip is pulled up under the
- * hero and dissolves into it (see ProofStrip.css). Everything below the fold is
- * still scaffolding — copy lands in a follow-up brief.
+ * hero and dissolves into it (see ProofStrip.css). Below the fold the roadmap
+ * answers what happens if a brand lists, and then the page asks once.
  */
 export default function App() {
   return (
@@ -16,15 +18,10 @@ export default function App() {
       <main>
         <Hero />
         <ProofStrip />
-
-        {/* Below the fold — to be written:
-            • how it works
-            • risk reversal: free, no exclusivity, live in minutes
-            • closing CTA (reuse <CTAButton size="small" />) */}
-        <PlaceholderSection id="how-it-works" label="How it works" />
-        <PlaceholderSection id="risk-reversal" label="Risk reversal" />
-        <PlaceholderSection id="list-your-brand" label="Closing CTA" />
+        <HowItWorks />
+        <ClosingCTA />
       </main>
+      <Footer />
     </div>
   );
 }

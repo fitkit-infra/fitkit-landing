@@ -1,12 +1,16 @@
 /*
  * Fitkit landing — design tokens and base styles.
  *
- * Light only, on purpose: the page is one warm paper surface with near-black
- * text and a single accent. There is no dark palette to fall back to, so
- * nothing here is defined inside a colour-scheme media query.
+ * Two palettes, same page: warm paper with near-black text, and its night cut
+ * — the same warmth read as a dark room rather than a lit sheet. Every colour
+ * on the page comes through these tokens, so the switch is a single attribute
+ * on <html> (set by the top bar's Theme button, and before first paint by the
+ * inline script in index.html).
  */
 
 :root {
+  color-scheme: light;
+
   /* Surfaces — warm, paper-like. Never pure white. */
   --paper: #faf8f5;
   --paper-tint: #f4efe7;
@@ -22,6 +26,15 @@
   --clay-deep: #74381f;
   --clay-veil: rgba(143, 74, 49, 0.16);
 
+  /* The top bar's backdrop once the page has scrolled under it — the paper
+     surface, held just short of opaque. */
+  --paper-veil: rgba(250, 248, 245, 0.82);
+  /* Depth under the CTA. Warm on paper, and pulled back on dark, where a drop
+     shadow reads as grime rather than lift. */
+  --cta-shadow: 0 1px 2px rgba(66, 30, 15, 0.16), 0 10px 26px -14px rgba(66, 30, 15, 0.6);
+  --cta-shadow-hover: 0 2px 4px rgba(66, 30, 15, 0.18), 0 20px 40px -18px rgba(66, 30, 15, 0.72);
+  --cta-shadow-press: 0 1px 2px rgba(66, 30, 15, 0.22), 0 6px 16px -12px rgba(66, 30, 15, 0.5);
+
   /* Type. Fraunces (display serif) carries headlines only; Inter (grotesk)
      carries every piece of UI chrome and body copy. Do not cross the two. */
   --serif: 'Fraunces Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -36,16 +49,53 @@
   --page-x: clamp(20px, 4.6vw, 68px);
   --page-max: 1520px;
 
+  /* Width of the hero's widest headline line. Hero measures the real value on
+     mount; this is the pre-measurement estimate, close enough that the top bar
+     — which aligns to it — does not visibly jump when the measurement lands. */
+  --headline-width: min(67vw, 1120px);
+
   /* Masonry strip gutter — the app feed uses a hairline gutter; the landing
      page opens it up a little so the grid reads as an editorial spread. */
   --feed-gutter: 12px;
   --card-radius: 14px;
 }
 
+/*
+ * Night cut. Same hues, inverted role: the ink becomes the surface, the paper
+ * becomes the type, and the clay is lifted a couple of steps because the light
+ * accent sinks into a dark ground at its paper value.
+ *
+ * Only colour tokens change here. Layout, type and motion are shared, so the
+ * two themes are the same page under different light.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #14110f;
+  --paper-tint: #1e1a17;
+
+  --ink: #f4efe8;
+  --ink-soft: #a89c91;
+  --hairline: rgba(244, 239, 232, 0.12);
+
+  --clay: #cd7a56;
+  --clay-deep: #b96844;
+  --clay-veil: rgba(205, 122, 86, 0.22);
+
+  --paper-veil: rgba(20, 17, 15, 0.78);
+  /* Almost nothing: on a dark ground the button's own colour is the lift. */
+  --cta-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --cta-shadow-hover: 0 4px 18px -8px rgba(205, 122, 86, 0.5);
+  --cta-shadow-press: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 @media (max-width: 760px) {
   :root {
     --feed-gutter: 8px;
     --card-radius: 11px;
+    /* The headline runs nearly edge to edge down here, so the estimate is
+       simply the page's content width. */
+    --headline-width: min(84vw, 1120px);
   }
 }
 
