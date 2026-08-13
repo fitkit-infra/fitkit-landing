@@ -6,30 +6,45 @@
   /* Pulled up under the hero so the imagery's fade-out zone overlaps the
      whitespace beneath the copy — the words sit in the dissolve, not above it. */
   margin-top: clamp(-150px, -11vh, -76px);
-  /* The dissolve. Nothing at the top edge, full strength by a third of the way
-     down, and a softer release at the bottom so the grid doesn't butt against
-     the paper of the sections below. */
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.16) 11%,
-    rgba(0, 0, 0, 0.62) 23%,
-    #000 36%,
-    #000 84%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.16) 11%,
-    rgba(0, 0, 0, 0.62) 23%,
-    #000 36%,
-    #000 84%,
-    transparent 100%
-  );
   /* Proof, not furniture: the strip never takes a click or a text selection. */
   pointer-events: none;
   user-select: none;
+}
+
+/* The dissolve, as two static paper-coloured scrims instead of a live mask.
+   A `mask-image` over content that's animating every frame (the drift, the
+   parallax) forces the browser to re-composite the masked pixels themselves
+   on every frame — that's what was making page scroll choppy. A gradient
+   painted on top costs nothing per frame, it's just an opaque layer, and
+   reads identically since the ground behind it is the same --paper. Nothing
+   at the top edge, full strength by a third of the way down, and a softer
+   release at the bottom so the grid doesn't butt against the paper below. */
+.proof::before,
+.proof::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.proof::before {
+  top: 0;
+  height: 36%;
+  background: linear-gradient(
+    180deg,
+    var(--paper) 0%,
+    color-mix(in srgb, var(--paper) 84%, transparent) 30.5%,
+    color-mix(in srgb, var(--paper) 38%, transparent) 63.9%,
+    transparent 100%
+  );
+}
+
+.proof::after {
+  bottom: 0;
+  height: 16%;
+  background: linear-gradient(180deg, transparent 0%, var(--paper) 100%);
 }
 
 /* Taller than the band at both ends, so the parallax shift can never expose an
@@ -85,7 +100,7 @@
   .proof {
     /* Less pull-up than desktop: frees room above for a bigger CTA and more
        breathing space before the feed dissolves in. */
-    margin-top: clamp(-90px, -7vh, -48px);
+    margin-top: clamp(-56px, -3.5vh, -16px);
   }
 }
 
