@@ -1,0 +1,71 @@
+.hero {
+  position: relative;
+  /* Above the strip: the imagery slides up underneath the copy and dissolves
+     into it, so the copy has to own the higher layer. */
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--page-x);
+  /* Generous, and asymmetric: more air under the headline than over it, since
+     the strip is pulled up into the bottom of that space and needs room to
+     dissolve before it reaches the CTA. */
+  padding-block: clamp(64px, 11vh, 132px) clamp(104px, 17vh, 196px);
+  pointer-events: none;
+}
+
+.hero__copy {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+  /* The section ignores pointer events so the strip behind it is never blocked;
+     the copy itself takes them back for the CTA and text selection. */
+  pointer-events: auto;
+}
+
+.hero__headline {
+  font-family: var(--serif);
+  font-variation-settings: var(--serif-display);
+  font-weight: 400;
+  font-size: clamp(2.55rem, 6.1vw, 5.35rem);
+  line-height: 1.035;
+  letter-spacing: -0.021em;
+  text-wrap: balance;
+}
+
+.hero__line {
+  display: block;
+  overflow: hidden;
+  /* Room for descenders inside the clipping box, taken back off the line so the
+     leading is unchanged. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.hero__line-inner {
+  display: block;
+  will-change: transform;
+}
+
+.hero__action {
+  margin-top: clamp(34px, 4.4vh, 52px);
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding-block: clamp(44px, 8vh, 76px) clamp(76px, 12vh, 120px);
+  }
+
+  /* Sized so both written lines still hold as single lines down to a 320px
+     screen — the layout rescales, it does not re-break. */
+  .hero__headline {
+    font-size: clamp(1.45rem, 7.6vw, 2.5rem);
+    line-height: 1.07;
+    letter-spacing: -0.016em;
+    /* `balance` would re-wrap one line and not the other at these widths. */
+    text-wrap: normal;
+  }
+
+  .hero__action {
+    margin-top: 30px;
+  }
+}

@@ -1,0 +1,128 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  /* No backdrop at rest — the hero's paper runs straight up behind it. */
+  background: transparent;
+  transition: background 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  border-bottom: 1px solid transparent;
+}
+
+.topbar--lifted {
+  background: rgba(250, 248, 245, 0.82);
+  backdrop-filter: saturate(1.1) blur(14px);
+  -webkit-backdrop-filter: saturate(1.1) blur(14px);
+  border-bottom-color: var(--hairline);
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 14px;
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.topbar__logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.topbar__wordmark {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 48, 'SOFT' 20, 'WONK' 1;
+  font-weight: 600;
+  font-size: 27px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* Dropped onto its optical baseline — the serif sits high in its line box,
+     same treatment as the app titlebar. */
+  transform: translateY(2px);
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.topbar__link {
+  position: relative;
+  font-size: 14.5px;
+  font-weight: 450;
+  letter-spacing: 0.005em;
+  color: var(--ink-soft);
+  padding-block: 4px;
+  transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.topbar__link:hover {
+  color: var(--ink);
+}
+
+/* The one accent detail outside the CTA: a clay rule that draws in from the
+   left on hover. */
+.topbar__underline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--clay);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.topbar__link:hover .topbar__underline,
+.topbar__link:focus-visible .topbar__underline {
+  transform: scaleX(1);
+}
+
+@media (max-width: 640px) {
+  .topbar__inner {
+    padding-block: 11px;
+  }
+
+  .topbar__logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .topbar__wordmark {
+    font-size: 22px;
+    transform: translateY(2px);
+  }
+
+  .topbar__nav {
+    gap: 20px;
+  }
+
+  .topbar__link {
+    font-size: 13.5px;
+  }
+
+  /* Collapsed bar: links flagged `compact: false` in the nav config drop out
+     rather than the bar wrapping onto two rows. */
+  .topbar__link--wide-only {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar,
+  .topbar__link,
+  .topbar__underline {
+    transition: none;
+  }
+}

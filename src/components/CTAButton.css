@@ -1,0 +1,49 @@
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  font-weight: 500;
+  letter-spacing: 0.004em;
+  color: var(--paper);
+  background: var(--clay);
+  border-radius: 10px;
+  /* Warm shadow — a neutral grey one reads as a generic SaaS button against
+     the paper. */
+  box-shadow: 0 1px 2px rgba(66, 30, 15, 0.16), 0 10px 26px -14px rgba(66, 30, 15, 0.6);
+  transition: background 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.cta:hover {
+  background: var(--clay-deep);
+  box-shadow: 0 2px 4px rgba(66, 30, 15, 0.18), 0 20px 40px -18px rgba(66, 30, 15, 0.72);
+}
+
+.cta:active {
+  box-shadow: 0 1px 2px rgba(66, 30, 15, 0.22), 0 6px 16px -12px rgba(66, 30, 15, 0.5);
+}
+
+.cta--hero {
+  font-size: 16px;
+  padding: 17px 38px;
+}
+
+.cta--small {
+  font-size: 15px;
+  padding: 14px 30px;
+}
+
+@media (max-width: 640px) {
+  .cta--hero {
+    font-size: 15.5px;
+    padding: 15px 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta {
+    transition: none;
+  }
+}
