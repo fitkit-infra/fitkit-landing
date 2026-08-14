@@ -5,6 +5,10 @@
  * entry and it renders, on desktop and mobile alike. `compact: false` drops a
  * link from the collapsed mobile bar, which is how the bar stays legible once
  * this list is longer than a couple of items.
+ *
+ * An `href` starting with `#/` is a page of its own (see hooks/useRoute) and the
+ * bar marks it as the current one while it is open; anything else is a position
+ * on the landing page.
  */
 export interface NavLink {
   label: string;
@@ -14,7 +18,7 @@ export interface NavLink {
 }
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Blog', href: '#blog' },
+  { label: 'Roadmap', href: '#/roadmap' },
   { label: 'For indie creators', href: '#for-indie-creators', compact: false },
   { label: 'Policies', href: '#policies' },
 ];

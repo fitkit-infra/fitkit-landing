@@ -14,17 +14,74 @@ npm run preview
 
 | Path | What it is |
 | --- | --- |
+| `src/App.tsx` | The two pages — landing and roadmap — inside the bar-and-footer frame. |
 | `src/components/TopBar.tsx` | Sticky bar: mark, wordmark, nav. Picks up a blurred backdrop once the page scrolls. |
 | `src/components/Hero.tsx` | Headline (two set lines) and the page's single CTA. |
 | `src/components/ProofStrip.tsx` | Auto-scrolling masonry grid of real outfit imagery. |
 | `src/components/PlaceholderSection.tsx` | Empty, outlined-in-dev scaffolding for the sections below the fold. |
+| `src/components/Roadmap.tsx` | The roadmap page at `#/roadmap`, drawn from the JSON below. |
 | `src/data/nav.ts` | Nav links and the CTA, as config. `compact: false` drops a link from the collapsed mobile bar. |
 | `src/data/feed.ts` | The proof strip's static image manifest. |
+| `src/data/roadmap.json` | **The roadmap itself. The only file to edit to move an item along.** |
+| `src/hooks/useRoute.ts` | The router: which page the fragment names, and the scroll reset that comes with a change of page. |
 | `src/motion/springs.ts` | The shared spring set. Every transition on the page comes from here. |
 
 Sections below the proof strip — how it works, risk reversal, closing CTA — are
 scaffolded and deliberately empty; their copy arrives in a follow-up brief.
 `App.tsx` lists them in order.
+
+## The roadmap page
+
+`#/roadmap`, linked from the top bar and reachable no other way — it is a page of
+its own, not a section the landing page can be scrolled into. Everything on it
+comes from `src/data/roadmap.json`, which is a flat list of items:
+
+```json
+[
+  {
+    "order": 1,
+    "title": "The feed",
+    "description": "Outfits from every brand at once, packed into one endless grid.",
+    "status": "done"
+  }
+]
+```
+
+| Field | What it does |
+| --- | --- |
+| `order` | Position in the run. `1` is at the top, `2` sits under it. Gaps are fine — the list is sorted, not indexed — and two items sharing a number keep the order the file lists them in. |
+| `title` | The item's line, set in the serif. |
+| `description` | A sentence or two under it. Anything past about three lines starts to fight the rail. |
+| `status` | One of `done`, `in progress`, `pending`. |
+
+**Changing a status is a one-word edit to that file.** `In Progress`, `in-progress`
+and `in progress` are all read the same way, and an unrecognised status falls back
+to `pending` rather than dropping the item — a typo costs an item its chip, not its
+place on the page. The JSON is imported rather than fetched, so it is bundled at
+build time: edit, `npm run build`, deploy. Moving the file to `public/` would make
+it swappable on the host without a rebuild, at the cost of a loading state on a
+page that currently has none.
+
+The status is told three times over, so it never rests on colour alone: the node's
+mark (a check, a filled dot, nothing at all), the chip's word, and the rail — which
+carries the clay only as far as the shipped work actually goes, and runs on as a
+hairline from there. The item in progress gets the one halo on the page, because
+that is what a reader came here to find.
+
+## Routing
+
+Two pages, one document, and no router dependency. Routes are fragments —
+`#/roadmap` — rather than paths, because this is a static build with nothing in
+front of it: a real path would 404 on a refresh or a shared link unless the host
+were configured to rewrite it, and a fragment needs no host cooperation at all.
+Same reason nothing else here needs a backend.
+
+The landing page's own anchors (`#how-it-works`, `#list-your-brand`) share that
+address bar, so a fragment only names a page when it starts with `#/`; everything
+else is a position on the landing page and leaves the route alone. Adding a page
+means adding a line to `ROUTES` in `src/hooks/useRoute.ts` and an entry in
+`src/data/nav.ts` — the bar marks whichever one is open by holding its hover rule
+out, which is the bar's existing piece of state rather than a second one.
 
 ## Swapping the proof strip imagery
 
@@ -58,8 +115,11 @@ app ships it white-on-transparent for its black canvas, which is invisible here.
 - **Type** — Fraunces (display serif, `opsz 144 / SOFT 34 / WONK 1`) for headlines
   and the wordmark; Inter for every piece of UI chrome and body copy. The split is
   disciplined: the serif never sets a button, the sans never sets a headline.
-- **Accent** — a single deep clay (`--clay: #8f4a31`), pulled from the outfit
-  imagery. It appears on the CTA and on the nav's hover rule. Nowhere else.
+- **Accent** — a single deep clay (`--clay`), pulled from the outfit imagery. It
+  appears on the CTA, on the nav's hover rule, on the how-it-works glyphs, and on
+  the roadmap's rail and status marks, where it is the page's actual subject.
+  Nowhere else, and never as small type: clay reads clearly as a surface or a
+  rule, and poorly as 11px type on the night palette.
 - **Motion** — springs only; no durations, no named easing curves for anything that
   moves (`src/motion/springs.ts`). The headline is set line by line out of its own
   clipping box, the strip's columns drift at their own speeds and parallax against

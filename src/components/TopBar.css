@@ -78,7 +78,8 @@
   transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.topbar__link:hover {
+.topbar__link:hover,
+.topbar__link--current {
   color: var(--ink);
 }
 
@@ -125,8 +126,11 @@
   transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The link for the page you are already on keeps its rule drawn — the bar's one
+   existing piece of state, held rather than played. */
 .topbar__link:hover .topbar__underline,
-.topbar__link:focus-visible .topbar__underline {
+.topbar__link:focus-visible .topbar__underline,
+.topbar__link--current .topbar__underline {
   transform: scaleX(1);
 }
 

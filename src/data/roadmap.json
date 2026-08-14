@@ -1,0 +1,50 @@
+[
+  {
+    "order": 1,
+    "title": "The feed",
+    "description": "Outfits from every brand at once, packed into one endless grid. The whole idea of Fitkit, and it is live.",
+    "status": "done"
+  },
+  {
+    "order": 2,
+    "title": "First brands listed",
+    "description": "A founding set of independent labels uploaded their catalogs and went out to shoppers.",
+    "status": "done"
+  },
+  {
+    "order": 3,
+    "title": "Buyable looks",
+    "description": "Every piece in a post carries its own purchase link, so a look is one tap from the brand that made it.",
+    "status": "done"
+  },
+  {
+    "order": 4,
+    "title": "Curation engine",
+    "description": "Building sets out of pieces from different brands, and putting each set in front of the buyer most likely to want it.",
+    "status": "in progress"
+  },
+  {
+    "order": 5,
+    "title": "Self-serve listing",
+    "description": "Upload a catalog, add your links, be live the same afternoon — without a call with us first.",
+    "status": "in progress"
+  },
+  {
+    "order": 6,
+    "title": "Brand dashboard",
+    "description": "Impressions, taps and sales per piece, so listing with us is something you can measure rather than hope about.",
+    "status": "pending"
+  },
+  {
+    "order": 7,
+    "title": "Saved sets",
+    "description": "Shoppers keep the looks they love, and brands find out which of their pieces keep turning up in them.",
+    "status": "pending"
+  },
+  {
+    "order": 8,
+    "title": "Fitkit on Android",
+    "description": "The app on Android, feature for feature with iOS.",
+    "status": "pending"
+  }
+]

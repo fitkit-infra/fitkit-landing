@@ -1,0 +1,341 @@
+/*
+ * The roadmap page.
+ *
+ * One column, centred as a block and set left inside it — the same arrangement
+ * the how-it-works route uses, for the same reason: a run of items needs one
+ * left edge that the nodes and the copy share, and centred copy would lose it.
+ *
+ * The accent is doing real work here rather than decoration, so it is rationed
+ * the way the rest of the site rations it: the rail carries clay only as far as
+ * the work has got, the item in progress gets the one halo on the page, and no
+ * status is told in colour alone — every card says its state in words.
+ */
+
+.roadmap {
+  /* The top bar sits on bare paper until the page scrolls, so the title opens
+     with air rather than against a border. */
+  padding-block: clamp(58px, 9vh, 116px) clamp(72px, 12vh, 148px);
+}
+
+.roadmap__head,
+.roadmap__list,
+.roadmap__foot {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.roadmap__head {
+  text-align: center;
+  margin-bottom: clamp(44px, 7vh, 84px);
+}
+
+.roadmap__title {
+  font-family: var(--serif);
+  /* Between the hero's display cut and a section title: this heads a page, but
+     it is not the page the site opens on. */
+  font-variation-settings: 'opsz' 96, 'SOFT' 30, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+/* Same clip-and-rise as the hero's lines: padded for descenders, pulled back by
+   the same amount so the leading is unchanged. */
+.roadmap__title-clip {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.roadmap__title-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+.roadmap__lede {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.1vw, 16.5px);
+  line-height: 1.62;
+  color: var(--ink-soft);
+  max-width: 48ch;
+  margin: clamp(14px, 2vh, 20px) auto 0;
+  text-wrap: balance;
+}
+
+/* The count line, in the footer's small caps — a colophon for the list below,
+   not a statistic about it. */
+.roadmap__tally {
+  margin-top: clamp(16px, 2.4vh, 24px);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.roadmap__list {
+  display: grid;
+  gap: var(--row-gap);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  --row-gap: clamp(20px, 3vh, 30px);
+}
+
+.roadmap__item {
+  position: relative;
+  display: grid;
+  /* Node column, then the card. The node column's width is the node, so the
+     rail's centre line is a fixed distance from the page's left edge whatever
+     the card does. */
+  grid-template-columns: var(--node) 1fr;
+  column-gap: clamp(16px, 1.8vw, 26px);
+  align-items: start;
+  --node: 34px;
+  /* Drops the node so its centre lands on the card's title line rather than on
+     the card's top edge. */
+  --node-top: 14px;
+  --rail: var(--hairline);
+}
+
+/* The rail: one hairline from under this item's node to the top of the next
+   one's, so the run reads as a single track the nodes are threaded onto. */
+.roadmap__item::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--node) / 2);
+  top: calc(var(--node-top) + var(--node));
+  bottom: calc(-1 * (var(--row-gap) + var(--node-top)));
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--rail);
+}
+
+/* Shipped work carries the accent, so the clay run stops exactly where the work
+   has got to — the track ahead of it stays a hairline. */
+.roadmap__item--done {
+  --rail: var(--clay);
+}
+
+.roadmap__item--done::after {
+  opacity: 0.42;
+}
+
+/* The list does not end so much as run out: the last segment carries on past
+   the last card and dissolves into the paper, the way the proof strip does at
+   its top edge. */
+.roadmap__item:last-child::after {
+  bottom: -52px;
+  mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+}
+
+.roadmap__node {
+  grid-column: 1;
+  margin-top: var(--node-top);
+  display: grid;
+  place-items: center;
+  width: var(--node);
+  height: var(--node);
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  /* Opaque: the rail passes behind the node and is interrupted by it rather
+     than drawn through the mark. */
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+
+.roadmap__item--done .roadmap__node {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+/* What is being built now gets the one halo on the page — it is what a reader
+   came here to find, and the rest of the run defers to it. */
+.roadmap__item--in-progress .roadmap__node {
+  border-color: var(--clay);
+  color: var(--clay);
+  box-shadow: 0 0 0 5px var(--clay-veil);
+}
+
+.roadmap__glyph {
+  width: 44%;
+  height: 44%;
+}
+
+/* Filled, so it wants less room than a stroked glyph at the same size. */
+.roadmap__glyph--dot {
+  width: 30%;
+  height: 30%;
+}
+
+.roadmap__card {
+  grid-column: 2;
+  border: 1px solid var(--hairline);
+  border-radius: var(--card-radius);
+  padding: clamp(15px, 1.5vw, 20px) clamp(17px, 1.7vw, 24px);
+}
+
+/* Work that exists sits on a surface; work that does not is an outline on bare
+   paper. The fill is the second thing that separates the two, after the chip. */
+.roadmap__item--done .roadmap__card,
+.roadmap__item--in-progress .roadmap__card {
+  background: var(--paper-tint);
+}
+
+.roadmap__item--in-progress .roadmap__card {
+  border-color: var(--clay-veil);
+}
+
+.roadmap__row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.roadmap__ordinal {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.roadmap__item-title {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 36, 'SOFT' 22, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(1.14rem, 1.5vw, 1.42rem);
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+}
+
+/*
+ * The chip is the status in words, which is what makes the colour optional.
+ * Its text stays ink at every state and the accent is carried by the fill and
+ * the border — clay reads clearly as a surface or a rule, and poorly as 11px
+ * type on the night palette.
+ */
+.roadmap__status {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  /* Nudged back onto the title's line: the caps sit high in their box. */
+  transform: translateY(-1px);
+}
+
+.roadmap__item--done .roadmap__status {
+  color: var(--ink);
+  border-color: transparent;
+  background: var(--clay-veil);
+}
+
+.roadmap__item--in-progress .roadmap__status {
+  color: var(--ink);
+  border-color: var(--clay);
+}
+
+.roadmap__body {
+  margin-top: clamp(8px, 1vh, 11px);
+  font-family: var(--sans);
+  font-size: clamp(14.5px, 1.05vw, 16px);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 54ch;
+}
+
+.roadmap__foot {
+  margin-top: clamp(52px, 8vh, 92px);
+  text-align: center;
+}
+
+.roadmap__note {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.roadmap__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(14px, 2vh, 20px);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 450;
+  color: var(--ink-soft);
+  transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.roadmap__back:hover {
+  color: var(--ink);
+}
+
+/* The arrow leads: it steps out ahead of the cursor's own direction of travel,
+   on the same curve the top bar's underline draws with. */
+.roadmap__back svg {
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.roadmap__back:hover svg {
+  transform: translateX(-3px);
+}
+
+@media (max-width: 760px) {
+  .roadmap__title {
+    font-size: clamp(1.9rem, 8.6vw, 2.5rem);
+  }
+
+  /* Reflow, not a restructure: same rail, tighter run. */
+  .roadmap__item {
+    --node: 28px;
+    --node-top: 12px;
+    column-gap: 14px;
+  }
+
+  .roadmap__item-title {
+    font-size: 1.16rem;
+  }
+
+  .roadmap__body {
+    font-size: 15px;
+  }
+}
+
+/* Narrow phones: the chip stops competing with the title for the row and takes
+   the ordinal's line instead, hard left. */
+@media (max-width: 460px) {
+  .roadmap__row {
+    gap: 8px 12px;
+  }
+
+  .roadmap__item-title {
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  .roadmap__status {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roadmap__back,
+  .roadmap__back svg {
+    transition: none;
+  }
+}

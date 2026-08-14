@@ -1,6 +1,7 @@
 import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'motion/react';
 import { useState } from 'react';
 import { NAV_LINKS } from '../data/nav';
+import { routeFor, type Route } from '../hooks/useRoute';
 import { useTheme } from '../hooks/useTheme';
 import { REVEAL_LIGHT } from '../motion/springs';
 import './TopBar.css';
@@ -8,13 +9,22 @@ import './TopBar.css';
 /** How far the page has to move before the bar earns its backdrop. */
 const LIFT_AT = 24;
 
+interface TopBarProps {
+  /** The page currently open, so its link can be marked as the current one. */
+  route: Route;
+}
+
 /**
  * Sticky top bar: Fitkit mark + wordmark on the left, the nav config on the
  * right. It sits on bare paper over the hero and only picks up a blurred
  * backdrop and a hairline once the page has scrolled under it, so there is no
  * border cutting across the hero at rest.
+ *
+ * A nav link that names a page of its own holds the hover rule out while that
+ * page is open — the underline is already the bar's one piece of state, so the
+ * current page borrows it rather than introducing a second mark.
  */
-export default function TopBar() {
+export default function TopBar({ route }: TopBarProps) {
   const reduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
   const [lifted, setLifted] = useState(false);
@@ -43,16 +53,27 @@ export default function TopBar() {
         </a>
 
         <nav className="topbar__nav" aria-label="Primary">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              className={`topbar__link${link.compact === false ? ' topbar__link--wide-only' : ''}`}
-              href={link.href}
-            >
-              {link.label}
-              <span className="topbar__underline" aria-hidden="true" />
-            </a>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const current = link.href.startsWith('#/') && routeFor(link.href) === route;
+
+            return (
+              <a
+                key={link.label}
+                className={[
+                  'topbar__link',
+                  link.compact === false ? 'topbar__link--wide-only' : '',
+                  current ? 'topbar__link--current' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                href={link.href}
+                aria-current={current ? 'page' : undefined}
+              >
+                {link.label}
+                <span className="topbar__underline" aria-hidden="true" />
+              </a>
+            );
+          })}
 
           {/* Last item on the bar, and the only control among the links: same
               type and hover rule, with the glyph carrying the state. */}
