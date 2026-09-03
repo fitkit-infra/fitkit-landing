@@ -1,0 +1,75 @@
+/*
+ * The indie-creators page.
+ *
+ * A page, not a section: it carries the same header treatment as the roadmap so
+ * the two read as siblings, and it holds the how-it-works run, which used to
+ * sit under the landing page's hero.
+ */
+
+.creators {
+  /* Clears the floating dock, which is out of the flow — see TopBar.css. */
+  padding-block: clamp(104px, 13vh, 156px) clamp(40px, 6vh, 72px);
+}
+
+.creators__head {
+  text-align: center;
+  max-width: 860px;
+}
+
+.creators__title {
+  font-family: var(--serif);
+  /* The roadmap's page-title cut: between the hero's display size and a section
+     heading. */
+  font-variation-settings:
+    'opsz' 96,
+    'SOFT' 30,
+    'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+/* Same clip-and-rise as the hero's lines: padded for descenders, pulled back by
+   the same amount so the leading is unchanged. */
+.creators__title-clip {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.creators__title-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* The run follows a header here rather than the hero's dissolve, so it opens
+   with less air than it does on the landing page. */
+.creators .how {
+  padding-block: clamp(46px, 7vh, 88px) clamp(8px, 2vh, 24px);
+}
+
+.creators__foot {
+  text-align: center;
+  margin-top: clamp(8px, 2vh, 28px);
+}
+
+.creators__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.creators__back:hover {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .creators__back {
+    transition: none;
+  }
+}

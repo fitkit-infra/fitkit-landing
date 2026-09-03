@@ -12,9 +12,9 @@
  */
 
 .roadmap {
-  /* The top bar sits on bare paper until the page scrolls, so the title opens
-     with air rather than against a border. */
-  padding-block: clamp(58px, 9vh, 116px) clamp(72px, 12vh, 148px);
+  /* Clears the floating dock, which is out of the flow — the title opens with
+     air under it rather than against it. */
+  padding-block: clamp(104px, 13vh, 156px) clamp(72px, 12vh, 148px);
 }
 
 .roadmap__head,
@@ -116,7 +116,7 @@
 /* Shipped work carries the accent, so the clay run stops exactly where the work
    has got to — the track ahead of it stays a hairline. */
 .roadmap__item--done {
-  --rail: var(--clay);
+  --rail: var(--clay-ink);
 }
 
 .roadmap__item--done::after {
@@ -148,15 +148,15 @@
 }
 
 .roadmap__item--done .roadmap__node {
-  border-color: var(--clay);
-  color: var(--clay);
+  border-color: var(--clay-ink);
+  color: var(--clay-ink);
 }
 
 /* What is being built now gets the one halo on the page — it is what a reader
    came here to find, and the rest of the run defers to it. */
 .roadmap__item--in-progress .roadmap__node {
-  border-color: var(--clay);
-  color: var(--clay);
+  border-color: var(--clay-ink);
+  color: var(--clay-ink);
   box-shadow: 0 0 0 5px var(--clay-veil);
 }
 
@@ -217,8 +217,8 @@
 /*
  * The chip is the status in words, which is what makes the colour optional.
  * Its text stays ink at every state and the accent is carried by the fill and
- * the border — clay reads clearly as a surface or a rule, and poorly as 11px
- * type on the night palette.
+ * the border — the pink reads clearly as a surface or a rule, and poorly as
+ * 11px type.
  */
 .roadmap__status {
   margin-left: auto;
@@ -245,7 +245,7 @@
 
 .roadmap__item--in-progress .roadmap__status {
   color: var(--ink);
-  border-color: var(--clay);
+  border-color: var(--clay-ink);
 }
 
 .roadmap__body {

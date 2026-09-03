@@ -1,49 +1,299 @@
+/*
+ * The brand's action.
+ *
+ * A squircle with three things doing the lifting: a top edge lit by an inset
+ * highlight, an accent halo cast under it instead of a grey drop shadow, and —
+ * on hover — two beams of pink light thrown horizontally out of its left and
+ * right sides, with white sparks carried out along them. The arrow is the only
+ * moving part that carries meaning: it steps forward under the cursor.
+ */
+
 .cta {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   font-family: var(--sans);
-  font-weight: 500;
+  font-weight: 550;
   letter-spacing: 0.004em;
-  color: var(--paper);
-  background: var(--clay);
-  border-radius: 10px;
-  /* Warm shadow — a neutral grey one reads as a generic SaaS button against
-     the paper. Tokenised, because on dark the same shadow reads as grime. */
-  box-shadow: var(--cta-shadow);
-  transition: background 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* Ink on the accent, not paper: the accent is a light pink under both
+     palettes, so the label is dark on it either way. */
+  color: var(--on-clay);
+  /* Lit from the top: the same pink, opened up towards white at the top edge
+     and closed down towards the deep grade at the bottom. */
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--clay) 82%, #fff 18%) 0%,
+    var(--clay) 46%,
+    var(--clay-deep) 100%
+  );
+  /* How far the light reaches out of each side, how far a spark travels before
+     it burns out — the spark runs a little past the beam — and how far the
+     light laps back over the button's own face, which is what makes the two
+     read as one surface rather than a button with lamps beside it. */
+  --beam-length: clamp(150px, 17vw, 320px);
+  --spark-distance: clamp(180px, 20vw, 380px);
+  --beam-overlap: 22px;
+  /* Rounded-rectangle fallback; the squircle proper is drawn at the bottom of
+     this file where the browser supports one. */
+  border-radius: 16px;
+  --focus-radius: 16px;
+  box-shadow: var(--cta-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1px color-mix(in srgb, var(--clay-deep) 28%, transparent);
+  transition: box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 260ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
-.cta:hover {
-  background: var(--clay-deep);
-  box-shadow: var(--cta-shadow-hover);
+.cta__label {
+  position: relative;
+  z-index: 1;
+}
+
+.cta__arrow {
+  position: relative;
+  z-index: 1;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  /* Held back at rest so the pill reads as type first and a control second. */
+  opacity: 0.72;
+  transform: translateX(-2px);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * The beams. Drawn as two pseudo-elements standing beside the button rather
+ * than a shadow around it, which is what keeps the light strictly horizontal
+ * and exactly as tall as the button — a shadow would round its corners and
+ * bleed over the top and bottom edges.
+ *
+ * They start their scale at the inner edge so the light reads as being pushed
+ * out of the button, not slid past it.
+ */
+.cta::before,
+.cta::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--beam-length);
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(7px);
+  transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * Each beam starts well inside the button and leaves in the button's own
+ * colour, so there is no edge where the surface stops and the light begins:
+ * the face washes out into the beam and the beam carries it away.
+ */
+.cta::before {
+  right: calc(100% - var(--beam-overlap));
+  transform-origin: right center;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--clay) 62%, var(--cta-glow) 38%) 0%,
+    color-mix(in srgb, var(--cta-glow) 84%, #fff 16%) 16%,
+    var(--cta-glow) 34%,
+    transparent 100%
+  );
+}
+
+.cta::after {
+  left: calc(100% - var(--beam-overlap));
+  transform-origin: left center;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--clay) 62%, var(--cta-glow) 38%) 0%,
+    color-mix(in srgb, var(--cta-glow) 84%, #fff 16%) 16%,
+    var(--cta-glow) 34%,
+    transparent 100%
+  );
+}
+
+.cta:hover::before,
+.cta:hover::after,
+.cta:focus-visible::before,
+.cta:focus-visible::after {
+  opacity: 1;
+  /* Surging rather than steady: the button is emitting, not lit. Only the
+     transform is animated, so the fade in and out stays with the transition
+     above and the two never fight over opacity. */
+  animation: cta-surge 1.9s ease-in-out infinite;
+}
+
+.cta:hover,
+.cta:focus-visible {
+  /* The 1px ring is dropped here: a drawn edge is exactly what the light is
+     supposed to dissolve. */
+  box-shadow: var(--cta-shadow-hover), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  filter: saturate(1.05);
+}
+
+.cta:hover .cta__arrow {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 .cta:active {
-  box-shadow: var(--cta-shadow-press);
+  box-shadow: var(--cta-shadow-press), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+@keyframes cta-surge {
+  0%,
+  100% {
+    transform: scaleX(0.9);
+    filter: blur(7px) brightness(1);
+  }
+
+  50% {
+    transform: scaleX(1.06);
+    filter: blur(6px) brightness(1.18);
+  }
+}
+
+/*
+ * The sparks: white streaks carried out along the beams — long and quick
+ * rather than dots drifting, which is the difference between a surface
+ * throwing light and a surface leaking bubbles. Each one is placed on a side
+ * and at a height by CTAButton.tsx, and they only run while the button is
+ * emitting — at rest they are transparent and animating nothing.
+ *
+ * The gradient puts the bright head at the leading end and trails the tail off
+ * behind it, and the stretch in the keyframes is anchored to that head, so a
+ * streak lengthens as it accelerates away instead of growing at both ends.
+ */
+.cta__spark {
+  position: absolute;
+  top: var(--y);
+  width: var(--length);
+  height: var(--size);
+  margin-top: calc(var(--size) / -2);
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 9px 0 rgba(255, 255, 255, 0.5);
+  will-change: transform, opacity;
+}
+
+.cta__spark--left {
+  right: calc(100% - var(--beam-overlap));
+  transform-origin: left center;
+  background: linear-gradient(
+    to left,
+    #fff 0%,
+    rgba(255, 255, 255, 0.72) 34%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.cta__spark--right {
+  left: calc(100% - var(--beam-overlap));
+  transform-origin: right center;
+  background: linear-gradient(
+    to right,
+    #fff 0%,
+    rgba(255, 255, 255, 0.72) 34%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.cta:hover .cta__spark--left,
+.cta:focus-visible .cta__spark--left {
+  animation: cta-spark-left var(--duration) cubic-bezier(0.3, 0, 0.72, 0.42) var(--delay) infinite;
+}
+
+.cta:hover .cta__spark--right,
+.cta:focus-visible .cta__spark--right {
+  animation: cta-spark-right var(--duration) cubic-bezier(0.3, 0, 0.72, 0.42) var(--delay) infinite;
+}
+
+@keyframes cta-spark-left {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(0.35);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  72% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(calc(-1 * var(--spark-distance)), var(--drift), 0) scaleX(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes cta-spark-right {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(0.35);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  72% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(var(--spark-distance), var(--drift), 0) scaleX(1.6);
+    opacity: 0;
+  }
 }
 
 .cta--hero {
   font-size: 16px;
-  padding: 17px 38px;
+  padding: 17px 34px 17px 38px;
 }
 
 .cta--small {
   font-size: 15px;
-  padding: 14px 30px;
+  padding: 14px 26px 14px 30px;
 }
 
 @media (max-width: 640px) {
   .cta--hero {
     font-size: 17px;
-    padding: 19px 40px;
+    padding: 19px 36px 19px 40px;
+  }
+}
+
+/* True squircle where the browser can draw one. */
+@supports (corner-shape: squircle) {
+  .cta {
+    border-radius: 22px;
+    corner-shape: squircle;
+    --focus-radius: 22px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cta {
+  .cta,
+  .cta__arrow {
     transition: none;
+  }
+
+  /* The light stays; only the motion in it goes. */
+  .cta:hover::before,
+  .cta:hover::after,
+  .cta:focus-visible::before,
+  .cta:focus-visible::after {
+    animation: none;
+    transform: none;
+  }
+
+  .cta__spark {
+    display: none;
   }
 }

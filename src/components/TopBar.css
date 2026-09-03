@@ -1,35 +1,44 @@
+/*
+ * A dock rather than a bar: fixed, centred, and only as wide as the mark and
+ * the nav need. Out of the flow entirely, so the page — the hero's feed
+ * included — runs to the top of the screen underneath it.
+ *
+ * Centred with auto margins rather than a translate, because the mount
+ * animation owns the transform.
+ */
 .topbar {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: clamp(10px, 1.5vh, 18px);
+  left: 0;
+  right: 0;
   z-index: 40;
-  width: 100%;
-  /* No backdrop at rest — the hero's paper runs straight up behind it. */
-  background: transparent;
-  transition: background 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    backdrop-filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
-  border-bottom: 1px solid transparent;
-}
-
-.topbar--lifted {
-  background: var(--paper-veil);
-  backdrop-filter: saturate(1.1) blur(14px);
-  -webkit-backdrop-filter: saturate(1.1) blur(14px);
-  border-bottom-color: var(--hairline);
+  width: max-content;
+  max-width: calc(100% - 2 * var(--page-x));
+  margin-inline: auto;
 }
 
 .topbar__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding-block: 14px;
-  /* Locked to the hero headline's measured text width — Hero writes
-     --headline-width, and the fallback in global.css is close enough that the
-     bar does not visibly shift when the real measurement lands. */
-  width: var(--headline-width);
-  max-width: calc(100% - 2 * var(--page-x));
-  margin-inline: auto;
+  gap: clamp(20px, 2.4vw, 34px);
+  padding: 7px 20px 7px 14px;
+  border: 1px solid var(--dock-line);
+  /* Rounded-rectangle fallback; the squircle proper is drawn below where the
+     browser supports one. */
+  border-radius: 22px;
+  background: var(--paper-veil);
+  backdrop-filter: saturate(1.1) blur(16px);
+  -webkit-backdrop-filter: saturate(1.1) blur(16px);
+  box-shadow: 0 1px 2px rgba(20, 17, 15, 0.05), 0 12px 30px -20px rgba(20, 17, 15, 0.45);
+  transition: box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Once the page has moved under it the dock is standing over imagery rather
+   than paper, so it takes a little more edge and a little more lift. */
+.topbar--lifted .topbar__inner {
+  border-color: var(--dock-line-lifted);
+  box-shadow: 0 1px 2px rgba(20, 17, 15, 0.07), 0 18px 40px -22px rgba(20, 17, 15, 0.6);
 }
 
 .topbar__brand {
@@ -120,7 +129,7 @@
   bottom: 0;
   height: 1px;
   width: 100%;
-  background: var(--clay);
+  background: var(--clay-ink);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -136,7 +145,8 @@
 
 @media (max-width: 640px) {
   .topbar__inner {
-    padding-block: 11px;
+    padding: 6px 14px 6px 11px;
+    gap: 14px;
   }
 
   .topbar__logo {
@@ -164,9 +174,13 @@
   }
 }
 
-/* Narrowest phones: the three nav items have to fit inside the headline's
-   width, which is all the room there is. */
+/* Narrowest phones: mark, three nav items and the dock's own padding have to
+   fit between the page gutters, which is all the room there is. */
 @media (max-width: 400px) {
+  .topbar__inner {
+    padding: 5px 12px 5px 9px;
+  }
+
   .topbar__brand {
     gap: 7px;
   }
@@ -189,8 +203,16 @@
   }
 }
 
+/* True squircle where the browser can draw one. */
+@supports (corner-shape: squircle) {
+  .topbar__inner {
+    border-radius: 30px;
+    corner-shape: squircle;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .topbar,
+  .topbar__inner,
   .topbar__link,
   .topbar__underline {
     transition: none;

@@ -9,7 +9,9 @@
   /* Generous, and asymmetric: more air under the headline than over it, since
      the strip is pulled up into the bottom of that space and needs room to
      dissolve before it reaches the CTA. */
-  padding-block: clamp(64px, 11vh, 132px) clamp(104px, 17vh, 196px);
+  /* The dock is fixed, so the top of this padding is also the page's clearance
+     under it — see TopBar.css. */
+  padding-block: clamp(98px, 13vh, 150px) clamp(104px, 17vh, 196px);
   pointer-events: none;
 }
 
@@ -23,12 +25,18 @@
 }
 
 .hero__headline {
-  font-family: var(--serif);
-  font-variation-settings: var(--serif-display);
-  font-weight: 400;
-  font-size: clamp(2.55rem, 6.1vw, 5.35rem);
-  line-height: 1.035;
-  letter-spacing: -0.021em;
+  /* The reading serif, not the display one: this is the sentence the page has
+     to be understood by. Newsreader is set at a display optical size and half a
+     step heavier than its text weight, which keeps it from thinning out at
+     these sizes. */
+  font-family: var(--serif-text);
+  font-variation-settings: 'opsz' 60;
+  font-weight: 500;
+  /* Newsreader sets appreciably wider than Fraunces at the same size, so the
+     scale is pulled back to keep both written lines unbroken — see HEADLINE. */
+  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+  line-height: 1.06;
+  letter-spacing: -0.011em;
   text-wrap: balance;
 }
 
@@ -41,7 +49,7 @@
   margin-bottom: -0.14em;
 }
 
-/* Inline-block so the box hugs the text: this is what the top bar measures. */
+/* Inline-block so the box hugs the text rather than the line. */
 .hero__line-inner {
   display: inline-block;
   will-change: transform;
@@ -53,20 +61,68 @@
 
 @media (max-width: 760px) {
   .hero {
-    padding-block: clamp(44px, 8vh, 76px) clamp(76px, 12vh, 120px);
+    padding-block: clamp(86px, 12vh, 112px) clamp(76px, 12vh, 120px);
   }
 
   /* Sized so both written lines still hold as single lines down to a 320px
      screen — the layout rescales, it does not re-break. */
   .hero__headline {
-    font-size: clamp(1.45rem, 7.6vw, 2.5rem);
-    line-height: 1.07;
-    letter-spacing: -0.016em;
+    font-size: clamp(1.2rem, 6.2vw, 2.45rem);
+    line-height: 1.1;
+    letter-spacing: -0.008em;
     /* `balance` would re-wrap one line and not the other at these widths. */
     text-wrap: normal;
   }
 
   .hero__action {
     margin-top: 40px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The hero stage — the frame the split layout needs, and nothing else.
+
+   Below the split width this is an ordinary block and the page reads top to
+   bottom: copy, then the feed band pulled up under it. At and above it the
+   stage becomes the positioning parent the two edge panels lay themselves out
+   in (see ProofStrip.css), and the copy stands in the middle of them.
+   --------------------------------------------------------------------------- */
+
+.stage {
+  position: relative;
+}
+
+/* Mirrors the `min-width` in hooks/useSplitLayout.ts. */
+@media (min-width: 1240px) {
+  .stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* The whole screen, so the two edge feeds run from the top of the page to
+       the bottom of it and the copy sits in the middle of them. `svh` rather
+       than `vh`: on mobile browsers `vh` is the tallest the viewport ever gets,
+       which would push the bottom of the feed under the toolbar. */
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  .hero {
+    /* The stage centres it; the old asymmetric block padding was there to make
+       room for a band that is no longer underneath. */
+    padding-block: clamp(40px, 6vh, 84px);
+    width: 100%;
+  }
+
+  .hero__copy {
+    /* Held clear of the panels: the two of them take a quarter of the screen
+       each, and the copy keeps its distance from both inner edges. */
+    max-width: min(760px, calc(100vw - 2 * var(--panel-width) - 96px));
+  }
+
+  .hero__headline {
+    /* Set to the column it now lives in rather than to the page, so both
+       written lines still hold as single lines between the panels. */
+    font-size: clamp(2.35rem, 3.05vw, 3.35rem);
+    letter-spacing: -0.009em;
   }
 }

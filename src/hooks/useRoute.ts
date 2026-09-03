@@ -13,10 +13,11 @@ import { useEffect, useRef, useState } from 'react';
  * fragment only names a route when it starts with `#/` — everything else is a
  * position on the landing page and leaves the route alone.
  */
-export type Route = 'home' | 'roadmap';
+export type Route = 'home' | 'roadmap' | 'creators';
 
 const ROUTES: Record<string, Route> = {
   '#/roadmap': 'roadmap',
+  '#/for-indie-creators': 'creators',
 };
 
 /** The route a fragment names. Anything unrecognised is the landing page. */

@@ -1,6 +1,5 @@
 import {
   motion,
-  useAnimationFrame,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -11,8 +10,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FEED_IMAGES, type FeedImage } from '../data/feed';
 import { useColumnCount } from '../hooks/useColumnCount';
+import { useSplitLayout } from '../hooks/useSplitLayout';
 import { REVEAL, SCROLL_SMOOTH } from '../motion/springs';
-import FeedCard from './FeedCard';
+import DriftColumn from './DriftColumn';
 import { packColumns } from './masonry';
 import './ProofStrip.css';
 
@@ -24,36 +24,45 @@ const ITEMS_PER_COLUMN = 5;
  *  identical speeds read as one sliding sheet instead of a feed. */
 const COLUMN_SPEEDS = [21, 29, 24, 33, 19, 27];
 
-/** How much of the page's scroll velocity feeds into the drift. */
-const VELOCITY_COUPLING = 0.16;
-/** Ceiling on that contribution, px/s, so a flung scroll never turns into a blur. */
-const MAX_VELOCITY_BOOST = 820;
+/** Columns per edge panel in the split layout, and so four in total — the same
+ *  count the full-bleed band fills on a desktop, dealt out two a side. */
+const COLUMNS_PER_PANEL = 2;
 
 /**
- * The proof strip: a masonry grid of real outfit imagery that drifts upward on
+ * The proof strip: real outfit imagery in a masonry grid that drifts upward on
  * its own, forever.
  *
- * Three things move here, and they are meant to be felt rather than noticed:
- * the columns drift at their own speeds; the whole grid parallaxes against the
- * page; and the drift is coupled to scroll velocity through a heavily damped
- * spring, so throwing the page down pushes the feed along with it and it eases
- * back to its resting speed afterwards.
+ * It has two layouts. Wide enough (see useSplitLayout) it is two panels of two
+ * columns each, pinned to the left and right screen edges and tilted towards
+ * the reader like the wings of a curved screen, with the hero's copy standing
+ * in the gap between them. Narrower, there is no gap to stand anything in, so
+ * it falls back to one full-bleed band that the copy sits above.
  *
- * The top edge is masked to nothing, so the imagery dissolves into the hero's
- * paper instead of butting against it.
+ * Three things move here, and they are meant to be felt rather than noticed:
+ * the columns drift at their own speeds; the grid parallaxes against the page;
+ * and the drift is coupled to scroll velocity through a heavily damped spring,
+ * so throwing the page down pushes the feed along with it and it eases back to
+ * its resting speed afterwards.
+ *
+ * The edges are scrimmed to paper, so the imagery dissolves into the page
+ * instead of butting against it.
  */
 export default function ProofStrip() {
   const reduceMotion = useReducedMotion();
   const bandRef = useRef<HTMLElement>(null);
+  const split = useSplitLayout();
   const slotCount = useColumnCount();
 
-  // The outermost slot on each side is left empty, so the grid stops short of
-  // the screen edges without any of the remaining columns moving: the slots are
-  // still laid out full-bleed and at the same width, the outer two just hold
-  // nothing. Below five slots there are not two columns to spare.
+  // Full-bleed band only: the outermost slot on each side is left empty, so the
+  // grid stops short of the screen edges without any of the remaining columns
+  // moving — the slots are still laid out full-bleed and at the same width, the
+  // outer two just hold nothing. Below five slots there are not two to spare.
   const edgeSlots = slotCount >= 5 ? 1 : 0;
-  const filledCount = slotCount - edgeSlots * 2;
+  const filledCount = split ? COLUMNS_PER_PANEL * 2 : slotCount - edgeSlots * 2;
 
+  // Packed across every filled column at once in both layouts, so the two edge
+  // panels are dealt from one shortest-column pass rather than repeating each
+  // other's pictures.
   const columns = useMemo(
     () => packColumns(FEED_IMAGES, filledCount, ITEMS_PER_COLUMN),
     [filledCount]
@@ -74,112 +83,102 @@ export default function ProofStrip() {
   const running = visible && !reduceMotion;
 
   return (
-    <section className="proof" ref={bandRef} aria-hidden="true">
-      <motion.div className="proof__parallax" style={reduceMotion ? undefined : { y: parallaxY }}>
-        <div className="proof__columns">
-          {Array.from({ length: slotCount }, (_, slot) => {
-            const columnIndex = slot - edgeSlots;
-            const items = columns[columnIndex];
+    <section
+      className={split ? 'proof proof--split' : 'proof'}
+      ref={bandRef}
+      aria-hidden="true"
+    >
+      {split ? (
+        // Both panels are children of the same perspective, so they share one
+        // vanishing point and the two tilts read as one curve around the copy.
+        (['left', 'right'] as const).map((side, panel) => (
+          <div className={`proof__panel proof__panel--${side}`} key={side}>
+            <motion.div
+              className="proof__parallax"
+              style={reduceMotion ? undefined : { y: parallaxY }}
+            >
+              <div className="proof__columns">
+                {columns
+                  .slice(panel * COLUMNS_PER_PANEL, (panel + 1) * COLUMNS_PER_PANEL)
+                  .map((items, i) => {
+                    const columnIndex = panel * COLUMNS_PER_PANEL + i;
+                    return (
+                      <Column
+                        key={`${side}-${i}`}
+                        items={items}
+                        index={columnIndex}
+                        // Outer column first on each side, so both panels
+                        // assemble inwards towards the copy.
+                        delayStep={side === 'left' ? COLUMNS_PER_PANEL - 1 - i : i}
+                        velocity={velocity}
+                        running={running}
+                        reduceMotion={!!reduceMotion}
+                      />
+                    );
+                  })}
+              </div>
+            </motion.div>
+          </div>
+        ))
+      ) : (
+        <motion.div className="proof__parallax" style={reduceMotion ? undefined : { y: parallaxY }}>
+          <div className="proof__columns">
+            {Array.from({ length: slotCount }, (_, slot) => {
+              const columnIndex = slot - edgeSlots;
+              const items = columns[columnIndex];
 
-            if (!items) {
-              return <div className="proof__column" key={`${slotCount}-empty-${slot}`} />;
-            }
+              if (!items) {
+                return <div className="proof__column" key={`${slotCount}-empty-${slot}`} />;
+              }
 
-            return (
-              <motion.div
-                className="proof__column"
-                key={`${slotCount}-${slot}`}
-                // Columns rise into place from below, left to right, so the
-                // grid assembles rather than appearing.
-                initial={reduceMotion ? false : { opacity: 0, y: 46 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...REVEAL, delay: 0.12 + columnIndex * 0.055 }}
-              >
-                <DriftColumn
+              return (
+                <Column
+                  key={`${slotCount}-${slot}`}
                   items={items}
-                  speed={COLUMN_SPEEDS[columnIndex % COLUMN_SPEEDS.length]}
+                  index={columnIndex}
+                  delayStep={columnIndex}
                   velocity={velocity}
                   running={running}
+                  reduceMotion={!!reduceMotion}
                 />
-              </motion.div>
-            );
-          })}
-        </div>
-      </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 }
 
-interface DriftColumnProps {
+interface ColumnProps {
   items: FeedImage[];
-  speed: number;
+  /** Position in the packed grid — picks the column's resting speed. */
+  index: number;
+  /** Position in the reveal order, which is not always the packing order. */
+  delayStep: number;
   velocity: MotionValue<number>;
   running: boolean;
+  reduceMotion: boolean;
 }
 
-/**
- * One infinitely looping column.
- *
- * The track holds two identical copies of the column and is translated upward;
- * the moment it has travelled one copy's height it jumps back by exactly that
- * height, which lands on a pixel-identical frame. Card spacing is padding
- * inside each card box rather than a flex gap, so a copy's measured height
- * already includes the spacing that follows it and the seam is seamless.
- */
-function DriftColumn({ items, speed, velocity, running }: DriftColumnProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const copyRef = useRef<HTMLDivElement>(null);
-  const copyHeight = useRef(0);
-  const offset = useRef(0);
-
-  // Measured rather than computed: images, gutters and rounding all land in
-  // here, and the loop is only invisible if the jump matches the copy's height
-  // exactly. Sub-pixel exactly — `offsetHeight` rounds to whole pixels, and
-  // half a pixel of error is half a pixel of judder on every wrap.
-  useEffect(() => {
-    const copy = copyRef.current;
-    if (!copy) return;
-    const measure = () => {
-      copyHeight.current = copy.getBoundingClientRect().height;
-    };
-    const observer = new ResizeObserver(measure);
-    observer.observe(copy);
-    measure();
-    return () => observer.disconnect();
-  }, [items]);
-
-  useAnimationFrame((_, delta) => {
-    const track = trackRef.current;
-    const height = copyHeight.current;
-    if (!running || !track || height === 0) return;
-
-    // Clamped: a backgrounded tab hands back one enormous delta on return, and
-    // an unclamped one would teleport the column.
-    const seconds = Math.min(delta, 48) / 1000;
-    const boost = clamp(velocity.get() * VELOCITY_COUPLING, -MAX_VELOCITY_BOOST, MAX_VELOCITY_BOOST);
-
-    let next = offset.current - (speed + boost) * seconds;
-    if (next <= -height) next += height;
-    else if (next > 0) next -= height;
-
-    offset.current = next;
-    track.style.transform = `translate3d(0, ${next.toFixed(2)}px, 0)`;
-  });
-
+/** A drifting column in its slot: the reveal, and the clipping box it loops in. */
+function Column({ items, index, delayStep, velocity, running, reduceMotion }: ColumnProps) {
   return (
-    <div className="proof__track" ref={trackRef}>
-      <div className="proof__copy" ref={copyRef}>
-        {items.map((image, i) => (
-          <FeedCard key={`a-${i}`} image={image} />
-        ))}
-      </div>
-      {/* Second copy — what the viewport is looking at for half of every loop. */}
-      <div className="proof__copy" aria-hidden="true">
-        {items.map((image, i) => (
-          <FeedCard key={`b-${i}`} image={image} />
-        ))}
-      </div>
-    </div>
+    <motion.div
+      className="proof__column"
+      // Columns rise into place from below, one after another, so the grid
+      // assembles rather than appearing.
+      initial={reduceMotion ? false : { opacity: 0, y: 46 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...REVEAL, delay: 0.12 + delayStep * 0.055 }}
+    >
+      <DriftColumn
+        items={items}
+        speed={COLUMN_SPEEDS[index % COLUMN_SPEEDS.length]}
+        velocity={velocity}
+        running={running}
+      />
+    </motion.div>
   );
 }
 
@@ -198,8 +197,4 @@ function useInView(ref: React.RefObject<Element | null>): boolean {
   }, [ref]);
 
   return inView;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }

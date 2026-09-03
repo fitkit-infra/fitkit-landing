@@ -20,39 +20,56 @@
   --ink-soft: #5d554d;
   --hairline: rgba(20, 17, 15, 0.09);
 
-  /* Accent: a deep clay pulled from the outfit imagery (burgundies, browns,
-     warm neutrals). Used on the CTA and one underline detail — nowhere else. */
-  --clay: #5e1e2b;
-  --clay-deep: #42151e;
-  --clay-veil: rgba(94, 30, 43, 0.16);
+  /* Accent: a light pink. It carries the CTA, the highlights and the veils.
+     Two grades, because one pink cannot do both jobs: --clay is the surface
+     (a fill, with --on-clay set on top of it), and --clay-ink is the same hue
+     taken down far enough to be legible as 1px rules, glyphs and type on
+     paper. Never set --clay on text, and never fill with --clay-ink. */
+  --clay: #f3b6c8;
+  --clay-deep: #e79fb5;
+  --clay-ink: #a83d5b;
+  --clay-veil: rgba(243, 182, 200, 0.42);
+  /* What is written on a --clay surface. Dark in both palettes: the accent is
+     a light pink under either light. */
+  --on-clay: #1c1013;
+
+  /* The floating dock's outline — grey rather than warm, so the bar reads as
+     chrome sitting over the page instead of another paper element. */
+  --dock-line: rgba(58, 54, 50, 0.16);
+  /* Same edge, drawn a step harder for when the dock is standing over imagery
+     rather than over paper. */
+  --dock-line-lifted: rgba(58, 54, 50, 0.26);
+
+  /* The halo behind the shopper's button. Tinted with the accent on paper,
+     where a white glow on a near-white ground would be invisible. */
+  --buy-glow: rgba(243, 182, 200, 0.85);
+  /* The light thrown off the brand button's sides on hover — a brighter, more
+     saturated cut of the accent than the surface it comes from. */
+  --cta-glow: rgba(255, 118, 168, 0.55);
 
   /* The top bar's backdrop once the page has scrolled under it — the paper
      surface, held just short of opaque. */
   --paper-veil: rgba(250, 248, 245, 0.82);
   /* Depth under the CTA. Warm on paper, and pulled back on dark, where a drop
      shadow reads as grime rather than lift. */
-  --cta-shadow: 0 1px 2px rgba(66, 30, 15, 0.16), 0 10px 26px -14px rgba(66, 30, 15, 0.6);
-  --cta-shadow-hover: 0 2px 4px rgba(66, 30, 15, 0.18), 0 20px 40px -18px rgba(66, 30, 15, 0.72);
-  --cta-shadow-press: 0 1px 2px rgba(66, 30, 15, 0.22), 0 6px 16px -12px rgba(66, 30, 15, 0.5);
+  --cta-shadow: 0 1px 2px rgba(120, 44, 68, 0.14), 0 10px 26px -14px rgba(120, 44, 68, 0.5);
+  --cta-shadow-hover: 0 2px 4px rgba(120, 44, 68, 0.16), 0 20px 40px -18px rgba(120, 44, 68, 0.6);
+  --cta-shadow-press: 0 1px 2px rgba(120, 44, 68, 0.2), 0 6px 16px -12px rgba(120, 44, 68, 0.44);
 
   /* Type. Fraunces (display serif) carries headlines only; Inter (grotesk)
      carries every piece of UI chrome and body copy. Do not cross the two. */
   --serif: 'Fraunces Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
+  /* The reading serif. Fraunces is the site's voice, but the hero headline is
+     the one place where the type has to be read at a glance before it is
+     admired, so the headline is set in Newsreader — a text face with an optical
+     size axis, quieter than Fraunces without being a system serif. */
+  --serif-text: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
     sans-serif;
-
-  /* Display cut of Fraunces: large optical size, softened terminals, wonky
-     glyphs on. This is what gives the headline its personality. */
-  --serif-display: 'opsz' 144, 'SOFT' 34, 'WONK' 1;
 
   /* Layout */
   --page-x: clamp(20px, 4.6vw, 68px);
   --page-max: 1520px;
-
-  /* Width of the hero's widest headline line. Hero measures the real value on
-     mount; this is the pre-measurement estimate, close enough that the top bar
-     — which aligns to it — does not visibly jump when the measurement lands. */
-  --headline-width: min(67vw, 1120px);
 
   /* Masonry strip gutter — the app feed uses a hairline gutter; the landing
      page opens it up a little so the grid reads as an editorial spread. */
@@ -61,9 +78,10 @@
 }
 
 /*
- * Night cut. Same hues, inverted role: the ink becomes the surface, the paper
- * becomes the type, and the clay is lifted a couple of steps because the light
- * accent sinks into a dark ground at its paper value.
+ * Night cut. Not the same warmth turned down: the day palette is warm paper,
+ * and the night one is a cold near-black — the ink becomes the surface, the
+ * paper becomes the type, and the accent keeps its value across both, which is
+ * what the two ink grades are for.
  *
  * Only colour tokens change here. Layout, type and motion are shared, so the
  * two themes are the same page under different light.
@@ -71,31 +89,42 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --paper: #14110f;
-  --paper-tint: #1e1a17;
+  /* Cold rather than warm: a blue-grey near-black, so the night page reads as
+     screen-lit instead of candle-lit. The accent is the only warmth left on it,
+     which is what makes the pink carry. */
+  --paper: #0d0f12;
+  --paper-tint: #171a20;
 
-  --ink: #f4efe8;
-  --ink-soft: #a89c91;
-  --hairline: rgba(244, 239, 232, 0.12);
+  --ink: #eef1f5;
+  --ink-soft: #99a3b0;
+  --hairline: rgba(238, 241, 245, 0.12);
 
-  --clay: #ac3950;
-  --clay-deep: #932f43;
-  --clay-veil: rgba(172, 57, 80, 0.22);
+  /* The pink holds its value on the night palette — it is already light, so it
+     is the ink grade that changes, up to the surface pink itself. */
+  --clay: #f0aec2;
+  --clay-deep: #e598ae;
+  --clay-ink: #f0aec2;
+  --clay-veil: rgba(240, 174, 194, 0.22);
+  --on-clay: #19100f;
 
-  --paper-veil: rgba(20, 17, 15, 0.78);
+  --dock-line: rgba(238, 241, 245, 0.16);
+  --dock-line-lifted: rgba(238, 241, 245, 0.26);
+
+  /* On the night palette the button's own white is the light. */
+  --buy-glow: rgba(246, 250, 255, 0.55);
+  --cta-glow: rgba(255, 132, 178, 0.62);
+
+  --paper-veil: rgba(13, 15, 18, 0.78);
   /* Almost nothing: on a dark ground the button's own colour is the lift. */
-  --cta-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --cta-shadow-hover: 0 4px 18px -8px rgba(205, 122, 86, 0.5);
-  --cta-shadow-press: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --cta-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --cta-shadow-hover: 0 4px 18px -8px rgba(255, 132, 178, 0.45);
+  --cta-shadow-press: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
 @media (max-width: 760px) {
   :root {
     --feed-gutter: 8px;
     --card-radius: 11px;
-    /* The headline runs nearly edge to edge down here, so the estimate is
-       simply the page's content width. */
-    --headline-width: min(84vw, 1120px);
   }
 }
 
@@ -147,10 +176,16 @@ p {
   background: var(--clay-veil);
 }
 
+/*
+ * The focus ring follows the shape of what it is ringing: the radius here is
+ * only the default for elements that have none of their own (a link in a run
+ * of text). Anything with a shape of its own — the buttons, the dock — sets
+ * --focus-radius to it, so a focused control never squares off while focused.
+ */
 :focus-visible {
-  outline: 2px solid var(--clay);
+  outline: 2px solid var(--clay-ink);
   outline-offset: 4px;
-  border-radius: 2px;
+  border-radius: var(--focus-radius, 3px);
 }
 
 .page {

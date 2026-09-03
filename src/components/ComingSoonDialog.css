@@ -1,0 +1,101 @@
+/*
+ * The coming-soon dialog.
+ *
+ * Black and white, in the page's own terms: the paper surface, ink type, one
+ * hairline, and no accent at all — this is a notice, not an offer.
+ */
+
+.soon {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: var(--page-x);
+  /* The page is dimmed towards ink under both palettes, so the box reads as
+     lifted off it either way. */
+  background: color-mix(in srgb, #06080b 62%, transparent);
+  backdrop-filter: blur(6px) saturate(0.9);
+  -webkit-backdrop-filter: blur(6px) saturate(0.9);
+}
+
+.soon__box {
+  width: min(100%, 468px);
+  padding: clamp(28px, 3.4vw, 40px);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-radius: 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14), 0 40px 80px -40px rgba(0, 0, 0, 0.7);
+  text-align: left;
+  outline: none;
+}
+
+.soon__eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+
+.soon__title {
+  font-family: var(--serif-text);
+  font-variation-settings: 'opsz' 40;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  line-height: 1.14;
+  letter-spacing: -0.008em;
+}
+
+.soon__body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 14px;
+}
+
+/* The one control: ink on paper, inverted — the dialog has no accent to spend
+   and the button still has to be the thing you reach for. */
+.soon__close {
+  margin-top: clamp(22px, 3vh, 30px);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 550;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 13px;
+  --focus-radius: 13px;
+  padding: 13px 26px;
+  cursor: pointer;
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.soon__close:hover {
+  opacity: 0.86;
+}
+
+/* True squircles where the browser can draw them; the radii above are the
+   rounded-rectangle fallback everywhere else. */
+@supports (corner-shape: squircle) {
+  .soon__box {
+    border-radius: 30px;
+    corner-shape: squircle;
+  }
+
+  .soon__close {
+    border-radius: 18px;
+    corner-shape: squircle;
+    --focus-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soon__close {
+    transition: none;
+  }
+}

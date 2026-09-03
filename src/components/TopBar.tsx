@@ -15,10 +15,11 @@ interface TopBarProps {
 }
 
 /**
- * Sticky top bar: Fitkit mark + wordmark on the left, the nav config on the
- * right. It sits on bare paper over the hero and only picks up a blurred
- * backdrop and a hairline once the page has scrolled under it, so there is no
- * border cutting across the hero at rest.
+ * The dock: Fitkit mark + wordmark, then the nav config, in one floating pill
+ * centred at the top of the screen. It is fixed and only as wide as its own
+ * contents, so the page runs full height underneath it — the hero's feed
+ * included — and it takes a little more edge and lift once the page has
+ * scrolled imagery under it.
  *
  * A nav link that names a page of its own holds the hover rule out while that
  * page is open — the underline is already the bar's one piece of state, so the
@@ -39,9 +40,8 @@ export default function TopBar({ route }: TopBarProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={REVEAL_LIGHT}
     >
-      {/* Width is the hero headline's measured width (see Hero), so the mark
-          sits directly over the headline's first letter and the last nav item
-          ends on its last. */}
+      {/* The pill itself: the border, the backdrop and the width, which is
+          whatever the mark and the nav come to. */}
       <div className="topbar__inner">
         <a className="topbar__brand" href="/" aria-label="Fitkit — home">
           {/* The app ships this mark in white for its black canvas; the landing
