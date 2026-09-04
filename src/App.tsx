@@ -1,10 +1,7 @@
-import ClosingCTA from './components/ClosingCTA';
 import Creators from './components/Creators';
 import Footer from './components/Footer';
-import Hero from './components/Hero';
-import OutfitShowcase from './components/OutfitShowcase';
-import ProofStrip from './components/ProofStrip';
 import Roadmap from './components/Roadmap';
+import ScrollStory from './components/ScrollStory';
 import TopBar from './components/TopBar';
 import { useRoute } from './hooks/useRoute';
 
@@ -30,25 +27,18 @@ export default function App() {
 }
 
 /**
- * Page order is deliberate: the hero's copy and the proof strip are one
- * continuous move from words into product, and they hold the whole first
- * screen. Below the fold one outfit is taken apart piece by piece — the
- * shopper's answer to what the feed above actually is — and then the page asks
- * once. What listing involves is a page of its own now (see Creators).
+ * The landing page is one told sequence, ending in one question.
+ *
+ * ScrollStory holds all of it on a single pinned stage: the slogan, the feed
+ * pulling itself into the middle of the screen, the outfit being picked out of
+ * it, bought, shipped — and then, on the stage the doorstep leaves empty, the
+ * closing line. That line is the last beat of the story rather than a section
+ * under it, which is why there is nothing beside the story here.
  */
 function Landing() {
   return (
     <main>
-      {/* One stage, two elements: on a wide screen the strip's panels are
-          positioned inside this box against the screen edges and the copy
-          stands between them; narrower, the stage is an ordinary block and the
-          two simply stack (see Hero.css). */}
-      <div className="stage">
-        <Hero />
-        <ProofStrip />
-      </div>
-      <OutfitShowcase />
-      <ClosingCTA />
+      <ScrollStory />
     </main>
   );
 }

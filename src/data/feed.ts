@@ -38,3 +38,15 @@ export const FEED_IMAGES: FeedImage[] = [
   { src: '/feed/outfit-11.jpg', aspectRatio: 0.5625 },
   { src: '/feed/outfit-12.jpg', aspectRatio: 0.7651 },
 ];
+
+/**
+ * The one outfit the page takes apart. It rides in the drifting feed like any
+ * other card, which is the point: the piece the story picks out later is a card
+ * the reader has already scrolled past, not a new image dropped on them.
+ *
+ * 1120 x 1855 — the file the story's outfit scene stands on.
+ */
+export const STORY_OUTFIT: FeedImage = { src: '/showcase/outfit.jpg', aspectRatio: 0.6038 };
+
+/** The feed as the story deals it: the chosen outfit first, then the pool. */
+export const STORY_FEED: FeedImage[] = [STORY_OUTFIT, ...FEED_IMAGES];

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
  * rescales.
  *
  * These are slots, not filled columns: from five slots up the strip leaves the
- * outermost one on each side empty (see ProofStrip), so the steps are chosen to
+ * outermost one on each side empty (see ScrollStory), so the steps are chosen to
  * keep the *filled* columns at a sane width — four of them on a desktop, three
  * from tablet-landscape down to where the grid goes full-bleed again.
  */

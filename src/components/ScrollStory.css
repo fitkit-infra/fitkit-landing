@@ -1,0 +1,614 @@
+/*
+ * The pinned stage, and everything that happens on it.
+ *
+ * One box the size of the screen, stuck to the top of a tall runway. Layers
+ * inside it, bottom to top: the drifting feed, the slogan, the outfit and its
+ * names, the parcel and the door, and the cursor over all of it. Nothing here
+ * lays anything out in flow — the scene's positions are computed against the
+ * stage in ScrollStory.tsx and arrive as inline pixels — so this file is the
+ * look of those pieces, not their placement.
+ */
+
+.story {
+  position: relative;
+}
+
+.story__runway {
+  position: relative;
+}
+
+.story__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  /* The reader's eye distance, shared by both edge panels so their opposite
+     tilts read as one curve rather than two skews. */
+  perspective: 880px;
+  perspective-origin: 50% 50%;
+}
+
+/* --------------------------------------------------------------- the feed */
+
+.story__feed {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  transform-style: preserve-3d;
+}
+
+.feed__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* Each panel is scaled and tilted about its inner edge: that edge holds still
+   while the outer one swings, which is what makes the pair read as a screen
+   curving around the reader — and, once the genie starts, as the imagery being
+   pulled through the middle of the screen rather than shrinking in place. */
+.feed__panel--left {
+  left: 0;
+  transform-origin: 100% 50%;
+}
+
+.feed__panel--right {
+  right: 0;
+  transform-origin: 0% 50%;
+}
+
+.feed__band {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* Taller than its box at both ends, so the parallax can never expose an edge
+   of the grid. */
+.feed__parallax {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -120px;
+  height: calc(100% + 240px);
+  will-change: transform;
+}
+
+.feed__columns {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+  /* Matches the app feed: half a gutter on the outer edge, so the space either
+     side of a card is identical wherever it sits in the grid. */
+  padding-inline: calc(var(--feed-gutter) / 2);
+}
+
+.feed__column {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  padding-inline: calc(var(--feed-gutter) / 2);
+  will-change: transform, opacity;
+}
+
+.feed__track {
+  will-change: transform;
+}
+
+.feed-card {
+  /* Card spacing lives inside the box so a copy's measured height carries it —
+     see DriftColumn. Do not swap this for a flex gap. */
+  padding-bottom: var(--feed-gutter);
+}
+
+.feed-card__image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--hairline);
+  /* Warm ground under a decoding image, rather than a flash of white. */
+  background: var(--paper-tint);
+}
+
+/*
+ * The dissolves. All of them are opaque paper-coloured layers painted over the
+ * imagery rather than a mask on it: a mask over content that is animating every
+ * frame forces the masked pixels to be re-composited every frame, and a
+ * gradient costs nothing.
+ */
+.feed__scrim-v,
+.feed__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.feed__scrim-v {
+  background:
+    linear-gradient(
+      180deg,
+      var(--paper) 0%,
+      color-mix(in srgb, var(--paper) 72%, transparent) 13%,
+      transparent 31%
+    ),
+    linear-gradient(
+      0deg,
+      var(--paper) 0%,
+      color-mix(in srgb, var(--paper) 70%, transparent) 10%,
+      transparent 27%
+    );
+}
+
+/* Inner edge, while there is still copy standing between the two panels. */
+.feed__panel--left .feed__scrim--in {
+  background: linear-gradient(
+    90deg,
+    transparent 24%,
+    color-mix(in srgb, var(--paper) 34%, transparent) 52%,
+    color-mix(in srgb, var(--paper) 76%, transparent) 76%,
+    var(--paper) 94%
+  );
+}
+
+.feed__panel--right .feed__scrim--in {
+  background: linear-gradient(
+    270deg,
+    transparent 24%,
+    color-mix(in srgb, var(--paper) 34%, transparent) 52%,
+    color-mix(in srgb, var(--paper) 76%, transparent) 76%,
+    var(--paper) 94%
+  );
+}
+
+/* Outer edge, once the pair are standing in open paper in the middle. */
+.feed__panel--left .feed__scrim--out {
+  background: linear-gradient(
+    270deg,
+    transparent 62%,
+    color-mix(in srgb, var(--paper) 58%, transparent) 86%,
+    var(--paper) 100%
+  );
+}
+
+.feed__panel--right .feed__scrim--out {
+  background: linear-gradient(
+    90deg,
+    transparent 62%,
+    color-mix(in srgb, var(--paper) 58%, transparent) 86%,
+    var(--paper) 100%
+  );
+}
+
+/* -------------------------------------------------------------- the slogan */
+
+.story__hero {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------- the outfit, named */
+
+.story__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  /* Only the button inside it is pressable. */
+  pointer-events: none;
+}
+
+.scene__figure {
+  position: absolute;
+  margin: 0;
+  will-change: transform, opacity;
+}
+
+/* Sits exactly on the photograph and flashes once as it goes out, so the cut
+   from outfit to parcel reads as one thing dropping into the place of another
+   rather than two things crossfading. */
+.scene__flash {
+  position: absolute;
+  border-radius: var(--card-radius);
+  background: #000;
+  pointer-events: none;
+}
+
+.scene__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--card-radius);
+  background: var(--paper-tint);
+}
+
+.scene__pins {
+  /* Laid over the photograph, with the names running outside it. */
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene__pin {
+  position: absolute;
+  left: 0;
+  top: var(--y);
+  width: 100%;
+  height: 0;
+  /* The rule crosses the photograph as well as the paper, so it is drawn as a
+     hairline with a counter-coloured one under it: one of the two always has
+     contrast against whatever it is passing over. */
+  --pin-rule: color-mix(in srgb, var(--ink) 38%, transparent);
+  --pin-rule-under: color-mix(in srgb, var(--paper) 55%, transparent);
+}
+
+.scene__dot {
+  position: absolute;
+  left: var(--x);
+  top: 0;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--clay-ink);
+  /* Reads on the garment as well as on paper: the ring separates it from
+     whatever it happens to be sitting on. */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--paper) 62%, transparent);
+}
+
+.scene__line {
+  position: absolute;
+  left: var(--x);
+  top: 0;
+  height: 1px;
+  width: calc(100% - var(--x) + var(--lead));
+  background: var(--pin-rule);
+  box-shadow: 0 1px 0 var(--pin-rule-under);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.scene__label {
+  position: absolute;
+  left: calc(100% + var(--lead) + 12px);
+  top: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--sans);
+  font-size: clamp(13px, 1.2vw, 18px);
+  /* Light: the rail is a list of what else is in the lay, and the only name on
+     it that is meant to be read is the chosen one, which is set heavy below. */
+  font-weight: 330;
+  letter-spacing: 0.004em;
+  color: var(--ink);
+}
+
+/*
+ * The one the story picks. It is the same pin, turned up: a larger dot with the
+ * accent ringing it, and a name that is heavier and darker than the rest of the
+ * rail once the noise has settled on it.
+ */
+.scene__pin--chosen .scene__dot {
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--paper) 70%, transparent),
+    0 0 0 7px var(--clay-veil),
+    0 0 22px 4px var(--clay-veil);
+}
+
+.scene__pin--chosen .scene__line {
+  background: color-mix(in srgb, var(--clay-ink) 62%, transparent);
+}
+
+/* Tabular-ish while it churns: the noise glyphs are wider than the letters, and
+   without a floor under the box the whole rail twitches sideways for the length
+   of the dissolve. */
+.scramble {
+  display: inline-block;
+  min-width: 9ch;
+  font-variant-ligatures: none;
+}
+
+.scene__pin--chosen .scene__label {
+  font-weight: 560;
+  color: var(--ink-soft);
+  transition: color 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scene__pin--chosen .scene__label:has(.scramble--done) {
+  font-weight: 720;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------- the button */
+
+.scene__action {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+/*
+ * The shopper's button: white in both palettes, sitting in its own radial glow.
+ * The glow is a blurred gradient behind the button rather than a box shadow, so
+ * it reads as light coming off the surface instead of a shadow under it.
+ */
+.buy {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.2vw, 17px);
+  font-weight: 550;
+  letter-spacing: 0.002em;
+  color: #101317;
+  background: #fff;
+  border: 1px solid rgba(20, 17, 15, 0.08);
+  border-radius: 18px;
+  --focus-radius: 18px;
+  height: clamp(52px, 6.4vh, 66px);
+  padding: 0 clamp(28px, 2.8vw, 42px);
+  cursor: pointer;
+  box-shadow:
+    0 1px 2px rgba(20, 17, 15, 0.06),
+    0 18px 44px -26px rgba(20, 17, 15, 0.5);
+  transition: box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.buy__label {
+  position: relative;
+  z-index: 1;
+}
+
+.buy__glow {
+  position: absolute;
+  /* Bigger than the button in both directions — the glow is the halo, not an
+     edge treatment. */
+  inset: -95% -34%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, var(--buy-glow) 0%, transparent 68%);
+  filter: blur(26px);
+  opacity: 0.95;
+  transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: buy-breathe 5.2s ease-in-out infinite;
+}
+
+.buy:hover {
+  box-shadow:
+    0 1px 2px rgba(20, 17, 15, 0.08),
+    0 26px 60px -30px rgba(20, 17, 15, 0.6);
+}
+
+.buy:hover .buy__glow {
+  opacity: 1;
+}
+
+/* The state the story's cursor puts it in: the same thing a real press does,
+   held for as long as the scroll says the button is down. */
+.buy--pressed {
+  box-shadow:
+    0 1px 2px rgba(20, 17, 15, 0.14),
+    0 8px 20px -16px rgba(20, 17, 15, 0.6);
+}
+
+.buy--pressed .buy__glow {
+  opacity: 1;
+}
+
+@keyframes buy-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.82;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+/* True squircle where the browser can draw one; the radius above is the
+   rounded-rectangle fallback everywhere else. */
+@supports (corner-shape: squircle) {
+  .buy {
+    border-radius: 26px;
+    corner-shape: squircle;
+    --focus-radius: 26px;
+  }
+}
+
+/* ------------------------------------------------------------------ shipped */
+
+.story__ship {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+}
+
+.ship__door {
+  position: absolute;
+  transform-origin: 50% 100%;
+  /* The casing and the panel lines. The leaf itself is filled white in the
+     drawing, so the door reads as a surface the parcel is standing against. */
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  filter: drop-shadow(0 18px 30px rgba(20, 17, 15, 0.16));
+  will-change: transform, opacity;
+}
+
+/* The mark the parcel lands on. Centred on its point by `x`/`y` in script
+   rather than by a transform here, because the impact animates `scaleX` and
+   the two would be writing the same property. */
+.ship__shadow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(20, 17, 15, 0.55) 0%, transparent 72%);
+  filter: blur(4px);
+  will-change: transform, opacity;
+}
+
+/* The parcel is set from its own centre, so the flight is read off one point
+   and the landing scale shrinks it towards the step rather than away from it. */
+.ship__parcel {
+  position: absolute;
+  /* Sized in script, off the door: see `boxSize` in ScrollStory.tsx. The margin
+     is in ems so it stays half the box at whatever that works out to. */
+  line-height: 1;
+  margin: -0.5em 0 0 -0.5em;
+  filter: drop-shadow(0 14px 24px rgba(20, 17, 15, 0.28));
+  will-change: transform, opacity;
+}
+
+/* The landing. Anchored at the foot of the box, so the squash sits it down on
+   the step rather than compressing it about its middle. */
+.ship__thud {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* Its own box, so the arrival can be scaled and blurred while the flight is
+   scaling and moving the box around it. A glyph is inline, and an inline box
+   takes neither transform nor filter. */
+.ship__box {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+/* ------------------------------------------------------------- the question */
+
+/*
+ * The closing line, on the stage the doorstep leaves empty. The section's own
+ * block padding is taken off — the stage is already the screen, and the line is
+ * centred in it rather than spaced down a page.
+ */
+.story__closing {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The verb in it is a link. */
+  pointer-events: auto;
+}
+
+.story__closing .closing {
+  width: 100%;
+  padding-block: 0;
+}
+
+/* The page's one anchor, as a point on the runway rather than a section: a jump
+   to it lands the reader at the closing beat. */
+.story__anchor {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------- the hand */
+
+.story__cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+  /* The arrow's tip is a few pixels inside its own box at the size it is drawn
+     at; this puts the point, not the corner, on the target. */
+  margin: -3px 0 0 -3px;
+  will-change: transform, opacity;
+}
+
+.cursor__arrow,
+.cursor__hand {
+  display: block;
+  filter: drop-shadow(0 3px 7px rgba(20, 17, 15, 0.35));
+}
+
+/* The hand's hotspot is its fingertip, which sits well in from the left of its
+   own box — this takes the box back so that the finger, and not the drawing,
+   is what stands on the target. The container's own -3px is included. */
+.cursor__hand {
+  margin-left: -10px;
+}
+
+/* ------------------------------------------------------------------- static */
+
+/*
+ * Reduced motion: the same page with the sequence taken out. Nothing is pinned,
+ * nothing is scrubbed, and the beats become sections in ordinary flow.
+ */
+.story--still {
+  padding-bottom: clamp(64px, 10vh, 120px);
+}
+
+.still__feed {
+  height: clamp(360px, 52vh, 560px);
+  overflow: hidden;
+  margin-top: clamp(-56px, -3.5vh, -16px);
+  pointer-events: none;
+  user-select: none;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+
+.still__scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(24px, 4vh, 40px);
+  padding-inline: var(--page-x);
+  padding-top: clamp(48px, 8vh, 96px);
+}
+
+.still__figure {
+  margin: 0;
+  width: min(100%, 360px);
+  aspect-ratio: 1120 / 1855;
+}
+
+.still__pieces {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.still__pieces li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.still__pieces .scene__dot,
+.still__pieces .scene__label {
+  position: static;
+  margin: 0;
+  transform: none;
+}

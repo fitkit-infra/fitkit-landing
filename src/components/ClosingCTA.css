@@ -14,6 +14,7 @@
 }
 
 .closing__line {
+  position: relative;
   font-family: var(--serif);
   font-variation-settings: 'opsz' 96, 'SOFT' 30, 'WONK' 1;
   font-weight: 400;
@@ -23,22 +24,155 @@
   text-wrap: balance;
 }
 
-/* Same clip-and-rise as the hero's headline lines: padded for descenders, and
-   pulled back by the same amount so the leading is unchanged. */
-.closing__line-clip {
+/* Padded for descenders, and pulled back by the same amount so the leading is
+   unchanged. */
+.closing__clip {
   display: block;
   overflow: hidden;
   padding-bottom: 0.14em;
   margin-bottom: -0.14em;
 }
 
-.closing__line-inner {
+.closing__text {
+  position: relative;
+  /* Over the beam: the light comes off the sentence, it does not sit on it. */
+  z-index: 1;
   display: inline-block;
   will-change: transform;
 }
 
-.closing__action {
-  margin-top: clamp(30px, 4vh, 46px);
+/*
+ * The verb, and the only thing on this screen to press.
+ *
+ * The accent's ink grade rather than its surface grade — this is type on paper,
+ * not a fill — and it lifts to the full accent while the light is running.
+ *
+ * No glow on the type itself. The line is set inside a clipping box, so a
+ * text-shadow wide enough to read is cut off flat where the box ends, and one
+ * word of the sentence ends up sitting in a rectangle of light. The beam behind
+ * the line is outside that box and is the glow.
+ */
+.closing__list {
+  color: var(--clay-ink);
+  cursor: pointer;
+  --focus-radius: 6px;
+  transition: color 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.closing__line--lit .closing__list {
+  color: color-mix(in srgb, var(--clay-ink) 82%, var(--clay) 18%);
+}
+
+/*
+ * The beam. Placed and sized in script — it spans from just past the F to the
+ * far side of the full stop — and drawn with its bright head at the left, so
+ * the light arrives at the first word rather than passing through it.
+ *
+ * It sweeps in from its right end: `scaleX` off a right origin is the travel,
+ * and it is the only thing animated on the way in, so the fade and the sweep
+ * never fight over the same property.
+ *
+ * Set as tall and as bright as the hero button's beams rather than as a rule
+ * under the type: this is the same light, and at five pixels behind a line this
+ * size there was nothing to see.
+ */
+.closing__beam {
+  position: absolute;
+  top: 50%;
+  height: clamp(20px, 1.9vw, 34px);
+  margin-top: calc(clamp(20px, 1.9vw, 34px) / -2);
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  opacity: 0;
+  filter: blur(9px);
+  transform: scaleX(0);
+  transform-origin: right center;
+  background: linear-gradient(
+    to left,
+    transparent 0%,
+    color-mix(in srgb, var(--cta-glow) 45%, transparent) 26%,
+    var(--cta-glow) 68%,
+    color-mix(in srgb, var(--cta-glow) 84%, #fff 16%) 92%,
+    #fff 100%
+  );
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.closing__line--lit .closing__beam {
+  opacity: 1;
+  transform: scaleX(1);
+  /* Surging rather than steady once it has arrived: the sentence is emitting,
+     not lit. Held back until the sweep has finished. */
+  animation: closing-surge 1.9s ease-in-out 620ms infinite;
+}
+
+@keyframes closing-surge {
+  0%,
+  100% {
+    transform: scaleX(0.97);
+    filter: blur(9px) brightness(1);
+  }
+
+  50% {
+    transform: scaleX(1.02);
+    filter: blur(8px) brightness(1.18);
+  }
+}
+
+/*
+ * The streaks, carried along the beam in the same direction it arrived from —
+ * right to left. They start in from the right end and run out past the left one.
+ * The bright head leads and the tail trails off behind it, and the stretch in
+ * the keyframes is anchored to that head, so a streak lengthens as it
+ * accelerates instead of growing at both ends.
+ */
+.closing__spark {
+  position: absolute;
+  right: var(--at);
+  top: 50%;
+  width: var(--length);
+  height: var(--size);
+  margin-top: calc(var(--size) / -2);
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: left center;
+  background: linear-gradient(
+    to left,
+    #fff 0%,
+    rgba(255, 255, 255, 0.72) 34%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  box-shadow: 0 0 9px 0 rgba(255, 255, 255, 0.5);
+  will-change: transform, opacity;
+}
+
+.closing__line--lit .closing__spark {
+  animation: closing-spark var(--duration) cubic-bezier(0.3, 0, 0.72, 0.42) var(--delay) infinite;
+}
+
+@keyframes closing-spark {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(0.35);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  72% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(calc(-1 * var(--spark-distance)), var(--drift), 0) scaleX(1.6);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 760px) {
@@ -50,8 +184,19 @@
     font-size: clamp(1.4rem, 6.4vw, 2.1rem);
     line-height: 1.12;
   }
+}
 
-  .closing__action {
-    margin-top: 26px;
+@media (prefers-reduced-motion: reduce) {
+  .closing__list {
+    transition: none;
+  }
+
+  /* The light stays; only the motion in it goes — as on the button. */
+  .closing__line--lit .closing__beam {
+    animation: none;
+  }
+
+  .closing__spark {
+    display: none;
   }
 }

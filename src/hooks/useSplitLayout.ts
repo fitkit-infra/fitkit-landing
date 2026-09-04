@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react';
  * copy, at or above it the feed is two 2-column panels pinned to the screen
  * edges with the copy standing between them.
  *
- * Kept in sync by hand with the `min-width` query in ProofStrip.css and
- * Hero.css — the layout is chosen in JS because the two modes pack the masonry
+ * Kept in sync by hand with the `min-width` query in Hero.css — the layout is chosen in JS because the two modes pack the masonry
  * differently (2 + 2 columns against N), which no media query can do.
  */
 export const SPLIT_MIN_WIDTH = 1240;

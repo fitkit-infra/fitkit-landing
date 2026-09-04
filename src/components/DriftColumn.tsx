@@ -66,14 +66,14 @@ export default function DriftColumn({ items, speed, velocity, running }: DriftCo
   });
 
   return (
-    <div className="proof__track" ref={trackRef}>
-      <div className="proof__copy" ref={copyRef}>
+    <div className="feed__track" ref={trackRef}>
+      <div className="feed__copy" ref={copyRef}>
         {items.map((image, i) => (
           <FeedCard key={`a-${i}`} image={image} />
         ))}
       </div>
       {/* Second copy — what the viewport is looking at for half of every loop. */}
-      <div className="proof__copy" aria-hidden="true">
+      <div className="feed__copy" aria-hidden="true">
         {items.map((image, i) => (
           <FeedCard key={`b-${i}`} image={image} />
         ))}

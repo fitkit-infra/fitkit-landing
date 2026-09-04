@@ -42,17 +42,37 @@
 
 .hero__line {
   display: block;
-  overflow: hidden;
-  /* Room for descenders inside the clipping box, taken back off the line so the
-     leading is unchanged. */
-  padding-bottom: 0.14em;
-  margin-bottom: -0.14em;
 }
 
 /* Inline-block so the box hugs the text rather than the line. */
 .hero__line-inner {
   display: inline-block;
-  will-change: transform;
+}
+
+/*
+ * The line as it resolves. The set type is left in the flow with its ink turned
+ * off, purely to hold the box at the width the sentence will end up at, and the
+ * dissolve is laid over the middle of it — the noise glyphs are wider than the
+ * letters they stand in for, and a centred headline that is measured off them
+ * slides sideways for the whole of the churn.
+ */
+.hero__line-inner--set {
+  position: relative;
+}
+
+.hero__line-ghost {
+  visibility: hidden;
+}
+
+.hero__line-inner--set .scramble {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  /* The rail's floor is for a short label in a narrow column; a headline sets
+     its own. */
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .hero__action {
@@ -80,49 +100,42 @@
 }
 
 /* ---------------------------------------------------------------------------
-   The hero stage — the frame the split layout needs, and nothing else.
+   The hero on the story's stage.
 
-   Below the split width this is an ordinary block and the page reads top to
-   bottom: copy, then the feed band pulled up under it. At and above it the
-   stage becomes the positioning parent the two edge panels lay themselves out
-   in (see ProofStrip.css), and the copy stands in the middle of them.
+   Below the split width the stage is the screen and the copy simply stands in
+   the middle of it, with the feed band behind. At and above it the feed is two
+   panels pinned to the screen edges (see ScrollStory.css) and the copy has to
+   hold itself clear of both.
    --------------------------------------------------------------------------- */
 
-.stage {
-  position: relative;
+/* The stage centres the copy in the screen, so the asymmetric block padding
+   above — which was there to make room for a band pulled up underneath — is
+   taken back at every width. */
+.story__hero .hero {
+  padding-block: clamp(40px, 6vh, 84px);
+  width: 100%;
 }
 
 /* Mirrors the `min-width` in hooks/useSplitLayout.ts. */
 @media (min-width: 1240px) {
-  .stage {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* The whole screen, so the two edge feeds run from the top of the page to
-       the bottom of it and the copy sits in the middle of them. `svh` rather
-       than `vh`: on mobile browsers `vh` is the tallest the viewport ever gets,
-       which would push the bottom of the feed under the toolbar. */
-    min-height: 100vh;
-    min-height: 100svh;
-  }
-
-  .hero {
-    /* The stage centres it; the old asymmetric block padding was there to make
-       room for a band that is no longer underneath. */
-    padding-block: clamp(40px, 6vh, 84px);
-    width: 100%;
-  }
-
-  .hero__copy {
+  .story__hero .hero__copy {
     /* Held clear of the panels: the two of them take a quarter of the screen
        each, and the copy keeps its distance from both inner edges. */
     max-width: min(760px, calc(100vw - 2 * var(--panel-width) - 96px));
   }
 
-  .hero__headline {
+  .story__hero .hero__headline {
     /* Set to the column it now lives in rather than to the page, so both
        written lines still hold as single lines between the panels. */
     font-size: clamp(2.35rem, 3.05vw, 3.35rem);
     letter-spacing: -0.009em;
+  }
+
+  :root {
+    /* Two columns wide, and never so wide that the pair crowds the copy out of
+       the middle third of the screen. Mirrors `layout()` in ScrollStory.tsx —
+       the panels themselves are sized there, in script, because the genie has
+       to know how far they travel. */
+    --panel-width: clamp(300px, 24vw, 520px);
   }
 }
