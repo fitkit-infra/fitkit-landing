@@ -20,6 +20,7 @@ npm run preview
 | `src/components/ProofStrip.tsx` | Auto-scrolling masonry grid of real outfit imagery. |
 | `src/components/PlaceholderSection.tsx` | Empty, outlined-in-dev scaffolding for the sections below the fold. |
 | `src/components/Roadmap.tsx` | The roadmap page at `#/roadmap`, drawn from the JSON below. |
+| `src/components/Policies.tsx` | The policies page at `#/policies` — currently the extension's privacy policy, which the Chrome Web Store requires to be publicly reachable. |
 | `src/data/nav.ts` | Nav links and the CTA, as config. `compact: false` drops a link from the collapsed mobile bar. |
 | `src/data/feed.ts` | The proof strip's static image manifest. |
 | `src/data/roadmap.json` | **The roadmap itself. The only file to edit to move an item along.** |
@@ -70,7 +71,8 @@ that is what a reader came here to find.
 
 ## Routing
 
-Two pages, one document, and no router dependency. Routes are fragments —
+Two pages, one document, and no router dependency — three now, with the
+policies page at `#/policies`. Routes are fragments —
 `#/roadmap` — rather than paths, because this is a static build with nothing in
 front of it: a real path would 404 on a refresh or a shared link unless the host
 were configured to rewrite it, and a fragment needs no host cooperation at all.

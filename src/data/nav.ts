@@ -20,7 +20,7 @@ export interface NavLink {
 export const NAV_LINKS: NavLink[] = [
   { label: 'Roadmap', href: '#/roadmap' },
   { label: 'For indie creators', href: '#/for-indie-creators', compact: false },
-  { label: 'Policies', href: '#policies' },
+  { label: 'Policies', href: '#/policies' },
 ];
 
 /**

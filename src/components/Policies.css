@@ -1,0 +1,118 @@
+/*
+ * The policies page.
+ *
+ * A centred head, then a single left-set reading column — the roadmap's
+ * arrangement without its machinery. Nothing animates: a reader arrives for
+ * the words. Prose is the sans at reading size, headings the serif at section
+ * weight, and every colour comes through the site's tokens so the palette
+ * switch needs no work here.
+ */
+
+.policy {
+  padding-block: clamp(104px, 13vh, 156px) clamp(72px, 12vh, 148px);
+}
+
+.policy__head,
+.policy__body {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.policy__head {
+  text-align: center;
+  margin-bottom: clamp(44px, 7vh, 84px);
+}
+
+.policy__title {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 96, 'SOFT' 30, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+.policy__lede {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.1vw, 16.5px);
+  line-height: 1.62;
+  color: var(--ink-soft);
+  max-width: 48ch;
+  margin: clamp(14px, 2vh, 20px) auto 0;
+  text-wrap: balance;
+}
+
+/* The effective date, in the footer's small caps — a colophon for the page. */
+.policy__meta {
+  margin-top: clamp(16px, 2.4vh, 24px);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.policy__section {
+  padding-block: clamp(22px, 3.4vh, 34px);
+  border-top: 1px solid var(--hairline);
+}
+
+.policy__section:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.policy__section h2 {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 36, 'SOFT' 22, 'WONK' 1;
+  font-weight: 400;
+  font-size: clamp(1.14rem, 1.5vw, 1.42rem);
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+  margin: 0 0 clamp(10px, 1.4vh, 14px);
+}
+
+.policy__section p,
+.policy__section li {
+  font-family: var(--sans);
+  font-size: clamp(14.5px, 1.05vw, 16px);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 62ch;
+}
+
+.policy__section p + p,
+.policy__section p + ul,
+.policy__section ul + p {
+  margin-top: 10px;
+}
+
+.policy__section ul {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+/* The few code-shaped names — hosts and permissions — set slightly smaller so
+   they sit quietly inside a sentence. */
+.policy code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  color: var(--ink);
+}
+
+.policy__mail {
+  color: var(--clay-ink);
+}
+
+@media (max-width: 760px) {
+  .policy__title {
+    font-size: clamp(1.9rem, 8.6vw, 2.5rem);
+  }
+
+  .policy__section p,
+  .policy__section li {
+    font-size: 15px;
+  }
+}

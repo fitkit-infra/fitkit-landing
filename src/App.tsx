@@ -1,16 +1,17 @@
 import Creators from './components/Creators';
 import Footer from './components/Footer';
+import Policies from './components/Policies';
 import Roadmap from './components/Roadmap';
 import ScrollStory from './components/ScrollStory';
 import TopBar from './components/TopBar';
 import { useRoute } from './hooks/useRoute';
 
 /**
- * The site is three pages inside one document: the landing page, the roadmap at
- * `#/roadmap`, and the creators page at `#/for-indie-creators`. The bar and the
- * footer are the frame around all three, so they sit out here and only the
- * middle is swapped — neither of the other two is a section the landing page
- * can be scrolled into.
+ * The site is four pages inside one document: the landing page, the roadmap at
+ * `#/roadmap`, the creators page at `#/for-indie-creators`, and the policies
+ * page at `#/policies`. The bar and the footer are the frame around all of
+ * them, so they sit out here and only the middle is swapped — none of the
+ * others is a section the landing page can be scrolled into.
  *
  * The route is read once, here, and handed down (see hooks/useRoute).
  */
@@ -20,7 +21,15 @@ export default function App() {
   return (
     <div className="page">
       <TopBar route={route} />
-      {route === 'roadmap' ? <Roadmap /> : route === 'creators' ? <Creators /> : <Landing />}
+      {route === 'roadmap' ? (
+        <Roadmap />
+      ) : route === 'creators' ? (
+        <Creators />
+      ) : route === 'policies' ? (
+        <Policies />
+      ) : (
+        <Landing />
+      )}
       <Footer />
     </div>
   );
